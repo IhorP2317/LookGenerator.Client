@@ -1,0 +1,141 @@
+
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  ::ng-deep .p-password-input {
+    padding-left: 2.5rem;
+  }
+}
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  width: 100%;
+  max-width: 30rem;
+}
+
+.login-card {
+  border-radius: 0.5rem;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  width: 100%;
+}
+
+.subheading {
+  margin-bottom: 1rem;
+  color: hsl(0, 0%, 60%);
+}
+
+.form-field {
+  margin-bottom: 1rem;
+}
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  p-password {
+    flex-grow: 1;
+  }
+
+}
+
+
+
+/* Lock icon inside the password field */
+.password-icon {
+  position: absolute;
+  left: 0.75rem; /* Add some padding inside */
+  color: hsl(0, 0%, 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Password input field */
+.password-input {
+
+  width: 100%;
+}
+.input-text {
+  width: 100%;
+  color: hsl(0, 0%, 70%);
+  border-radius: 0.25rem;
+}
+
+.input-text::placeholder {
+  color: hsl(0, 0%, 70%);
+
+}
+validation-text{
+  font-size: 0.875rem;
+
+}
+.error-text {
+  color: hsl(0, 55%, 50%);
+
+}
+.password-requirements {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  padding-left: .625rem;
+
+}
+
+.password-requirements p {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.25rem 0;
+}
+
+.password-requirements .success {
+  color: hsl(120, 70%, 40%); /* Green */
+}
+
+.password-requirements .error {
+  color: hsl(0, 70%, 50%); /* Red */
+}
+
+.password-requirements .pi {
+  font-size: 1rem;
+}
+.actions {
+  text-align: right;
+  margin-bottom: 1rem;
+}
+.forgot-link {
+  text-decoration: none;
+  color: hsl(240, 100%, 60%);
+  font-size: 0.875rem;
+}
+forgot-link:hover {
+  text-decoration: underline;
+}
+
+.submit-btn {
+  width: 100%;
+  background-color: hsl(240, 100%, 50%);
+  color: hsl(0, 0%, 100%);
+  border: none;
+  font-weight: 600;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:disabled {
+  background-color: hsl(240, 100%, 75%);
+  cursor: not-allowed;
+}
+
+.submit-btn:not(:disabled):hover {
+  background-color: hsl(240, 100%, 45%);
+}
+.secondary-action{
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+  color: hsl(0, 0%, 60%);
+}
