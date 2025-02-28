@@ -13,10 +13,21 @@ html,
 body {
   height: 100%;
   margin: 0;
+  padding-top: 3.75rem;
 }
 body{
   font-family: sans-serif;
 }
+.base-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+}
 
+.my-dark-look-generator {
+  background-color: hsl(220, 15%, 10%); /* Dark background */
+  color: white; /* Light text */
+}
 
 

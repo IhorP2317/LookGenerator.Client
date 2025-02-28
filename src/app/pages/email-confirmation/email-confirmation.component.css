@@ -1,0 +1,38 @@
+.email-confirmation-container {
+  max-width: 40rem;
+  margin: 5rem auto;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 10px hsl(0, 0%, 10%);
+  background: hsl(0, 0%, 15%);
+  color: hsl(0, 0%, 95%);
+  text-align: center;
+}
+.confirmation-container {
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+}
+.loading-message {
+  font-size: 1rem;
+  color: hsl(40, 100%, 50%);
+}
+
+.help-text {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-top: 1rem;
+}
+
+.pi {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.pi-check {
+  color: hsl(120, 80%, 50%);
+}
+
+.pi-times {
+  color: hsl(0, 80%, 60%);
+}

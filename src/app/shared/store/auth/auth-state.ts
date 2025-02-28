@@ -3,12 +3,23 @@ import { AuthStateModel } from './auth-state.model';
 import { AUTH_STATE_TOKEN } from '../../../tokens';
 import { inject, Injectable } from '@angular/core';
 import { UserApiService } from '../../../core/services/user.api.service';
-import { Observable, switchMap, take, tap } from 'rxjs';
+import { Observable, take, tap } from 'rxjs';
 import { BearerToken } from '../../../core/models/bearer-token/bearer-token';
 import { User } from '../../../core/models/user/user';
-import { patch, removeItem } from '@ngxs/store/operators';
+import { patch } from '@ngxs/store/operators';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { Login, Logout, RefreshToken } from './auth.actions';
+import {
+  ChangePassword,
+  DeleteUser,
+  Login,
+  Logout,
+  RefreshToken,
+  ResetPassword,
+  SendForgotPasswordEmail,
+  Signup,
+} from './auth.actions';
+import { catchErrorWithNotification } from '../../../core/helpers/utils/catch-error-with-notification.util';
+import { MessageService } from 'primeng/api';
 
 @State<AuthStateModel>({
   name: AUTH_STATE_TOKEN,
@@ -21,35 +32,48 @@ import { Login, Logout, RefreshToken } from './auth.actions';
 @Injectable()
 export class AuthState implements NgxsOnInit {
   private userApiService: UserApiService = inject(UserApiService);
+  private messageService: MessageService = inject(MessageService);
+
   ngxsOnInit(ctx: StateContext<AuthStateModel>): void {
-    this.reloadCurrentUser(ctx);
+    this.loadCurrentUser(ctx);
   }
 
   @Selector([AuthState])
   static getCurrentUser(state: AuthStateModel) {
     return state.currentUser;
   }
+
   @Selector([AuthState])
   static getBearerToken(state: AuthStateModel) {
     return state.bearerToken;
   }
+
   @Selector()
   static getIsAuthenticated(state: AuthStateModel): boolean {
     return !!state.bearerToken && !!state.currentUser;
   }
+
   @Action(Login)
-  login(ctx: StateContext<AuthStateModel>, action: Login): void {
-    this.userApiService
-      .login(action.email, action.password)
-      .pipe(
-        take(1),
-        tap((token: BearerToken) => this.setTokensPair(ctx, token)),
-        switchMap((_) => this.userApiService.getCurrentUser()),
-        tap((user: User) => this.setCurrentUser(ctx, user)),
-        untilDestroyed(this),
-      )
-      .subscribe();
+  login(ctx: StateContext<AuthStateModel>, action: Login) {
+    return this.userApiService.login(action.email, action.password).pipe(
+      take(1),
+      tap((token: BearerToken) => {
+        this.setTokensPair(ctx, token);
+        this.loadCurrentUser(ctx);
+      }),
+      untilDestroyed(this),
+    );
   }
+
+  @Action(Signup)
+  signup(ctx: StateContext<AuthStateModel>, action: Signup): Observable<void> {
+    return this.userApiService.signup(
+      action.userName,
+      action.email,
+      action.password,
+    );
+  }
+
   @Action(RefreshToken)
   refreshToken(ctx: StateContext<AuthStateModel>, action: RefreshToken): void {
     this.userApiService
@@ -60,26 +84,61 @@ export class AuthState implements NgxsOnInit {
         }),
         untilDestroyed(this),
       )
-      .subscribe({
-        next: (_) => {},
-        error: (err) => {
-          console.error(err);
-        },
-      });
+      .subscribe();
   }
+
   @Action(Logout)
   logout(ctx: StateContext<AuthStateModel>): void {
     this.setCurrentUser(ctx, null);
     this.setTokensPair(ctx, null);
   }
 
-  private reloadCurrentUser(ctx: StateContext<AuthStateModel>) {
+  @Action(SendForgotPasswordEmail)
+  sendForgotPasswordEmail(
+    ctx: StateContext<AuthStateModel>,
+    action: SendForgotPasswordEmail,
+  ) {
+    return this.userApiService
+      .sendForgotPasswordEmail(action.email)
+      .pipe(catchErrorWithNotification<void>(this.messageService));
+  }
+
+  @Action(ResetPassword)
+  resetPassword(ctx: StateContext<AuthStateModel>, action: ResetPassword) {
+    return this.userApiService.resetPassword(
+      action.email,
+      action.passwordResetToken,
+      action.newPassword,
+    );
+  }
+  @Action(ChangePassword)
+  changePassword(ctx: StateContext<AuthStateModel>, action: ChangePassword) {
+    return this.userApiService.changePassword(
+      action.userId,
+      action.oldPassword,
+      action.newPassword,
+    );
+  }
+
+  @Action(DeleteUser)
+  deleteUser(ctx: StateContext<AuthStateModel>, action: DeleteUser) {
+    return this.userApiService.deleteUser(action.userId).pipe(
+      tap(() => {
+        if (action.userId === ctx.getState().currentUser?.id) {
+          ctx.dispatch(new Logout());
+        }
+      }),
+    );
+  }
+
+  private loadCurrentUser(ctx: StateContext<AuthStateModel>) {
     const token = ctx.getState().bearerToken;
     if (token) {
       this.userApiService
         .getCurrentUser()
         .pipe(
           tap((user: User) => this.setCurrentUser(ctx, user)),
+          catchErrorWithNotification<User>(this.messageService),
           untilDestroyed(this),
         )
         .subscribe();

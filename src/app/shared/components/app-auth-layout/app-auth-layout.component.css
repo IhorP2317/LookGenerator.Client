@@ -1,0 +1,26 @@
+.base-wrapper{
+  ::ng-deep .p-password-input {
+    padding-left: 2.5rem;
+  }
+}
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  width: 100%;
+  max-width: 30rem;
+}
+
+.auth-card {
+  border-radius: 0.5rem;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  width: 100%;
+
+}
+
+.subheading {
+  margin-bottom: 1rem;
+  color: hsl(0, 0%, 60%);
+}
+

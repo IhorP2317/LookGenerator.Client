@@ -1,0 +1,94 @@
+<app-auth-layout title="Sign Up" subtitle="Create your account">
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <!-- Username Input -->
+    <div class="form-field">
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-user"></p-inputicon>
+        <input
+          pInputText
+          formControlName="username"
+          placeholder="Username"
+          class="input-text"
+        />
+      </p-iconfield>
+      @if (registerForm.controls.username.touched && registerForm.controls.username.invalid) {
+        <small class="validation-text error-text">
+          Username is required
+        </small>
+      }
+    </div>
+
+    <!-- Email Input -->
+    <div class="form-field">
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-envelope"></p-inputicon>
+        <input
+          pInputText
+          formControlName="email"
+          placeholder="Email"
+          class="input-text"
+        />
+      </p-iconfield>
+      @if (registerForm.controls.email.touched && registerForm.controls.email.invalid) {
+        <small class="validation-text error-text">
+          Valid email is required
+        </small>
+      }
+    </div>
+
+    <!-- Password Input -->
+    <div class="form-field">
+      <div class="password-field">
+        <i class="pi pi-lock password-icon"></i>
+        <p-password
+          formControlName="password"
+          placeholder="Password"
+          [toggleMask]="true"
+          [fluid]="true"
+          [feedback]="false"
+          inputStyleClass="password-input"
+        />
+      </div>
+    </div>
+
+    @if (registerForm.controls.password.touched || registerForm.controls.password.dirty) {
+      <div class="password-requirements  pt-0 pb-2">
+        @for (requirement of passwordRequirements; track requirement.message) {
+          <p class="validation-text" [ngClass]="{'success': requirement.valid, 'error': !requirement.valid}">
+            <i class="pi" [ngClass]="requirement.valid ? 'pi-check' : 'pi-times'"></i>
+            <small class="pl-2">{{ requirement.message }}</small>
+          </p>
+        }
+      </div>
+    }
+    <!-- Confirm Password Input -->
+    <div class="form-field">
+      <div class="password-field">
+        <i class="pi pi-lock password-icon"></i>
+        <p-password
+          formControlName="confirmPassword"
+          placeholder="Confirm Password"
+          [toggleMask]="true"
+          [fluid]="true"
+          [feedback]="false"
+          inputStyleClass="password-input"
+        />
+      </div>
+      @if (registerForm.controls.confirmPassword.touched &&
+      registerForm.controls.confirmPassword.errors?.['passwordsMismatch']){
+        <small class="validation-text error-text">
+          Passwords do not match
+        </small>
+      }
+    </div>
+
+
+
+    <button pButton type="submit" class="submit-btn" [disabled]="registerForm.invalid">
+      Sign Up
+    </button>
+    <div class="secondary-action">
+      <a routerLink="/login">Already have an account? Log in here</a>
+    </div>
+  </form>
+</app-auth-layout>

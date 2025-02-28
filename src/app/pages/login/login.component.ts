@@ -1,5 +1,4 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { Card } from 'primeng/card';
 import {
   NonNullableFormBuilder,
   ReactiveFormsModule,
@@ -17,13 +16,15 @@ import { Store } from '@ngxs/store';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { MessageService } from 'primeng/api';
 import { Login } from '../../shared/store/auth/auth.actions';
-import {Router} from '@angular/router';
-import {tap} from 'rxjs';
+import { Router, RouterLink } from '@angular/router';
+import { tap } from 'rxjs';
+import { AppAuthLayoutComponent } from '../../shared/components/app-auth-layout/app-auth-layout.component';
+import { catchErrorWithNotification } from '../../core/helpers/utils/catch-error-with-notification.util';
+import { BearerToken } from '../../core/models/bearer-token/bearer-token';
 @UntilDestroy()
 @Component({
   selector: 'app-login',
   imports: [
-    Card,
     InputText,
     ButtonDirective,
     ReactiveFormsModule,
@@ -31,15 +32,17 @@ import {tap} from 'rxjs';
     InputIcon,
     Password,
     NgClass,
+    AppAuthLayoutComponent,
+    RouterLink,
   ],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
+  styleUrls: ['./login.component.css', '../../../assets/styles/auth.css'],
 })
 export class LoginComponent implements OnInit {
   private formBuilder: NonNullableFormBuilder = inject(NonNullableFormBuilder);
   private store: Store = inject(Store);
   private messageService: MessageService = inject(MessageService);
-  private  router: Router = inject(Router);
+  private router: Router = inject(Router);
   loginForm = this.formBuilder.group({
     email: this.formBuilder.control<string>('', [
       Validators.required,
@@ -56,7 +59,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.onPasswordValueChanges();
   }
-   onSubmit(): void {
+  onSubmit(): void {
     if (this.loginForm.valid) {
       this.store
         .dispatch(
@@ -66,12 +69,15 @@ export class LoginComponent implements OnInit {
           ),
         )
         .pipe(
-          tap(  () => {
-              this.messageService.add({
-                text: 'Login success!',
-                severity: 'success',
-              });
+          tap(() => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Login Success',
+              detail: 'You have successfully logged in!',
+            });
+            void this.router.navigate(['/feed']);
           }),
+          catchErrorWithNotification<void>(this.messageService),
           untilDestroyed(this),
         )
         .subscribe();

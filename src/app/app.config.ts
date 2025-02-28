@@ -14,6 +14,8 @@ import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { MessageService } from 'primeng/api';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './core/helpers/interceptors/auth.interceptor';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { EmailConfirmationState } from './shared/store/email-confirmation/email-confirmation-state';
 
 const customPreset = definePreset(Aura, {
   semantic: {
@@ -100,5 +102,6 @@ export const appConfig: ApplicationConfig = {
     },
     MessageService,
     provideHttpClient(withInterceptors([authInterceptor])),
+    provideAnimationsAsync(),
   ],
 };
