@@ -1,20 +1,20 @@
-<div class="email-confirmation-container">
-  <h1>Email Confirmation</h1>
-    @if (isEmailConfirmed() === true) {
-      <div class="confirmation-container">
-        <i class="pi pi-check text-xl"></i>
-        <p>Your email has been successfully confirmed. You can close this page and continue using the application!</p>
-        <p class="help-text">Need more help? Please contact the system administrator.</p>
-      </div>
-    } @else if (isEmailConfirmed() === false) {
-      <div class="confirmation-container">
-        <i class="pi pi-times text-xl"></i>
-        <p>Your email has not been confirmed. Something went wrong, please try again later!</p>
-        <p class="help-text">Need more help? Please contact the system administrator.</p>
-      </div>
-    } @else {
-      <p class="loading-message">Processing your request...</p>
-    }
+<div class="base-wrapper">
+  <div class="email-confirmation-container">
+    <h1>Email Confirmation</h1>
+      @if (isEmailConfirmed() === true) {
+        <div class="confirmation-container">
+          <i class="pi pi-check text-xl"></i>
+          <p>Your email has been successfully confirmed. You can close this page and continue using the application!</p>
+          <p class="help-text">Need more help? Please contact the system administrator.</p>
+        </div>
+      } @else if (isEmailConfirmed() === false) {
+        <div class="confirmation-container">
+          <i class="pi pi-times text-xl"></i>
+          <p>Your email has not been confirmed. Something went wrong, please try again later!</p>
+          <p class="help-text">Need more help? Please contact the system administrator.</p>
+        </div>
+      } @else {
+        <p class="loading-message">Processing your request...</p>
+      }
+  </div>
 </div>
-
-

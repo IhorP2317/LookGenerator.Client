@@ -9,8 +9,7 @@ import { ButtonDirective } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { Password } from 'primeng/password';
-import { PASSWORD_VALIDATION_ERRORS } from '../../core/constants/constants';
-import { NgClass } from '@angular/common';
+import { AsyncPipe, NgClass } from '@angular/common';
 import { passwordValidator } from '../../core/helpers/validators/password.validator';
 import { Store } from '@ngxs/store';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -20,7 +19,7 @@ import { Router, RouterLink } from '@angular/router';
 import { tap } from 'rxjs';
 import { AppAuthLayoutComponent } from '../../shared/components/app-auth-layout/app-auth-layout.component';
 import { catchErrorWithNotification } from '../../core/helpers/utils/catch-error-with-notification.util';
-import { BearerToken } from '../../core/models/bearer-token/bearer-token';
+import { PasswordValidationService } from '../../shared/services/password-validation.service';
 @UntilDestroy()
 @Component({
   selector: 'app-login',
@@ -34,6 +33,7 @@ import { BearerToken } from '../../core/models/bearer-token/bearer-token';
     NgClass,
     AppAuthLayoutComponent,
     RouterLink,
+    AsyncPipe,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css', '../../../assets/styles/auth.css'],
@@ -43,6 +43,9 @@ export class LoginComponent implements OnInit {
   private store: Store = inject(Store);
   private messageService: MessageService = inject(MessageService);
   private router: Router = inject(Router);
+  private passwordValidationService: PasswordValidationService = inject(
+    PasswordValidationService,
+  );
   loginForm = this.formBuilder.group({
     email: this.formBuilder.control<string>('', [
       Validators.required,
@@ -50,11 +53,7 @@ export class LoginComponent implements OnInit {
     ]),
     password: this.formBuilder.control<string>('', [passwordValidator()]),
   });
-  passwordRequirements: Array<{ valid: boolean; message: string }> =
-    Object.entries(PASSWORD_VALIDATION_ERRORS).map(([_, message]) => ({
-      valid: false,
-      message,
-    }));
+  passwordRequirements$ = this.passwordValidationService.passwordRequirements$;
 
   ngOnInit(): void {
     this.onPasswordValueChanges();
@@ -86,16 +85,12 @@ export class LoginComponent implements OnInit {
   private onPasswordValueChanges(): void {
     this.loginForm.controls.password.valueChanges
       .pipe(
-        tap(() => {
-          const controlErrors = this.loginForm.controls.password.errors;
-
-          this.passwordRequirements = Object.entries(
-            PASSWORD_VALIDATION_ERRORS,
-          ).map(([key, message]) => ({
-            valid: !controlErrors?.[key],
-            message,
-          }));
-        }),
+        tap((_) =>
+          this.passwordValidationService.validate(
+            this.loginForm.controls.password,
+          ),
+        ),
+        untilDestroyed(this),
       )
       .subscribe();
   }

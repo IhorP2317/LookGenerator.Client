@@ -1,8 +1,13 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { Store } from '@ngxs/store';
 import { EmailConfirmationState } from '../../shared/store/email-confirmation/email-confirmation-state';
 import { ActivatedRoute } from '@angular/router';
-import { filter, map, switchMap, take, tap } from 'rxjs';
+import { filter, map, switchMap, take } from 'rxjs';
 import { ConfirmEmail } from '../../shared/store/email-confirmation/email-confirmation.actions';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
@@ -11,6 +16,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
   selector: 'app-email-confirmation',
   templateUrl: './email-confirmation.component.html',
   styleUrl: './email-confirmation.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmailConfirmationComponent implements OnInit {
   private store: Store = inject(Store);

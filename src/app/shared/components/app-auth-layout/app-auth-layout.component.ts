@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { Card } from 'primeng/card';
 
 @Component({
@@ -6,8 +6,9 @@ import { Card } from 'primeng/card';
   imports: [Card],
   templateUrl: './app-auth-layout.component.html',
   styleUrl: './app-auth-layout.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppAuthLayoutComponent {
-  @Input() title: string = '';
-  @Input() subtitle: string = '';
+  title = input('');
+  subtitle = input('');
 }

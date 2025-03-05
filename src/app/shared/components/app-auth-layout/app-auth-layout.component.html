@@ -1,7 +1,7 @@
 <div class="base-wrapper">
   <div class="auth-container">
-    <p-card [header]="title" class="auth-card">
-      <p class="subheading text-xl">{{ subtitle }}</p>
+    <p-card [header]="title()" class="auth-card">
+      <p class="subheading text-xl">{{ subtitle() }}</p>
       <ng-content></ng-content>
     </p-card>
   </div>

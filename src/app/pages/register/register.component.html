@@ -53,7 +53,7 @@
 
     @if (registerForm.controls.password.touched || registerForm.controls.password.dirty) {
       <div class="password-requirements  pt-0 pb-2">
-        @for (requirement of passwordRequirements; track requirement.message) {
+        @for (requirement of passwordRequirements$ | async; track requirement.message) {
           <p class="validation-text" [ngClass]="{'success': requirement.valid, 'error': !requirement.valid}">
             <i class="pi" [ngClass]="requirement.valid ? 'pi-check' : 'pi-times'"></i>
             <small class="pl-2">{{ requirement.message }}</small>

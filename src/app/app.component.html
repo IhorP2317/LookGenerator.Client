@@ -1,4 +1,9 @@
-<app-header></app-header>
-<router-outlet></router-outlet>
-<p-toast></p-toast>
-<app-loader></app-loader>
+@if(showHeader$ | async){
+  <app-header></app-header>
+}
+<div class="contents" [ngClass]="{'has-header': showHeader$ | async}">
+  <router-outlet></router-outlet>
+</div>
+  <p-toast></p-toast>
+  <app-loader></app-loader>
+

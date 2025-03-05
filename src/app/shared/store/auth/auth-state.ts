@@ -3,7 +3,7 @@ import { AuthStateModel } from './auth-state.model';
 import { AUTH_STATE_TOKEN } from '../../../tokens';
 import { inject, Injectable } from '@angular/core';
 import { UserApiService } from '../../../core/services/user.api.service';
-import { Observable, take, tap } from 'rxjs';
+import { Observable, of, switchMap, take, tap } from 'rxjs';
 import { BearerToken } from '../../../core/models/bearer-token/bearer-token';
 import { User } from '../../../core/models/user/user';
 import { patch } from '@ngxs/store/operators';
@@ -35,7 +35,7 @@ export class AuthState implements NgxsOnInit {
   private messageService: MessageService = inject(MessageService);
 
   ngxsOnInit(ctx: StateContext<AuthStateModel>): void {
-    this.loadCurrentUser(ctx);
+    this.loadCurrentUser(ctx).pipe(untilDestroyed(this)).subscribe();
   }
 
   @Selector([AuthState])
@@ -59,9 +59,8 @@ export class AuthState implements NgxsOnInit {
       take(1),
       tap((token: BearerToken) => {
         this.setTokensPair(ctx, token);
-        this.loadCurrentUser(ctx);
       }),
-      untilDestroyed(this),
+      switchMap((_) => this.loadCurrentUser(ctx)),
     );
   }
 
@@ -131,19 +130,20 @@ export class AuthState implements NgxsOnInit {
     );
   }
 
-  private loadCurrentUser(ctx: StateContext<AuthStateModel>) {
+  private loadCurrentUser(
+    ctx: StateContext<AuthStateModel>,
+  ): Observable<User | null> {
     const token = ctx.getState().bearerToken;
-    if (token) {
-      this.userApiService
-        .getCurrentUser()
-        .pipe(
-          tap((user: User) => this.setCurrentUser(ctx, user)),
-          catchErrorWithNotification<User>(this.messageService),
-          untilDestroyed(this),
-        )
-        .subscribe();
+    if (!token) {
+      return of(null);
     }
+
+    return this.userApiService.getCurrentUser().pipe(
+      tap((user: User) => this.setCurrentUser(ctx, user)),
+      catchErrorWithNotification<User | null>(this.messageService, null),
+    );
   }
+
   private setCurrentUser(
     ctx: StateContext<AuthStateModel>,
     user: User | null,

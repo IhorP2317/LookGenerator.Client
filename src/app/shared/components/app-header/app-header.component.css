@@ -1,13 +1,14 @@
-header {
-  padding: 0;
+
+.app-header {
+  height: var(--header-height);
+  background-color: var(--p-indigo-500);
+  position: sticky; /* Fix position at the top */
+  top: 0;
+  left: 0;
   display: flex;
   align-items: center;
-  width: 100%;
-  position: fixed; /* Fixed position to prevent scrolling issues */
-  top: 0;
-  z-index: 1000; /* Ensure header stays above other content */
-
-  .navigation-list {
-    padding: 1rem 0;
-  }
+  justify-content: space-between; /* Space items inside */
+  box-shadow: 0 .25rem 2.7rem hsl(0, 0%, 15%); /* Subtle shadow */
+  padding: 0.75rem;
 }
+

@@ -1,2 +1,31 @@
-<header>
+<header class="app-header shadow-sm">
+  <!-- Left section content here -->
+
+  <div class="ml-auto flex items-center gap-6 ">
+    @if(currentUser() != null) {
+    <div class="flex items-center gap-3 cursor-pointer" (click)="menu.toggle($event)">
+      <!-- User Avatar -->
+      <div class="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center transition-all hover:bg-blue-200">
+        <i class="pi pi-user text-blue-600 text-lg"></i>
+      </div>
+
+      <!-- User Name -->
+      <span class="text-sm font-medium">
+          {{currentUser()?.userName}}
+        </span>
+    </div>
+
+    <p-menu #menu [model]="items" [popup]="true" appendTo="body">
+    </p-menu>
+  } @else {
+      <a routerLink="/login" class="px-4 py-2  hover:text-gray-900 rounded-md transition-colors
+                hover:bg-gray-100">
+        Login
+      </a>
+      <a routerLink="/login" class="px-4 py-2  text-white rounded-md hover:bg-blue-700 transition-colors
+                focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
+        Sign up
+      </a>
+    }
+  </div>
 </header>

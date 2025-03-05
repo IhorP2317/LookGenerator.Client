@@ -34,7 +34,7 @@
     </div>
     @if (loginForm.controls.password.touched || loginForm.controls.password.dirty) {
       <div class="password-requirements">
-        @for (requirement of passwordRequirements; track requirement.message) {
+        @for (requirement of passwordRequirements$ | async; track requirement.message) {
           <p class="validation-text" [ngClass]="{'success': requirement.valid, 'error': !requirement.valid}">
             <i class="pi" [ngClass]="requirement.valid ? 'pi-check' : 'pi-times'"></i>
             <small class="pl-2">{{ requirement.message }}</small>
@@ -44,7 +44,7 @@
     }
 
     <div class="actions">
-      <a href="#" class="forgot-link">Forgot password?</a>
+      <a routerLink="/password/forgot" class="forgot-link">Forgot password?</a>
     </div>
 
     <button pButton type="submit" class="submit-btn" [disabled]="loginForm.invalid">
