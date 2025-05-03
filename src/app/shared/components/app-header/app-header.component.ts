@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Store } from '@ngxs/store';
-import { AuthState } from '../../store/auth/auth-state';
+import { AuthState } from '../../store/auth/auth.state';
 import { RouterLink } from '@angular/router';
 import { Logout } from '../../store/auth/auth.actions';
 import { Menu } from 'primeng/menu';

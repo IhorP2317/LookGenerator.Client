@@ -11,7 +11,7 @@ import { tap } from 'rxjs';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Store } from '@ngxs/store';
 import { ChangePassword } from '../../shared/store/auth/auth.actions';
-import { AuthState } from '../../shared/store/auth/auth-state';
+import { AuthState } from '../../shared/store/auth/auth.state';
 import { AppAuthLayoutComponent } from '../../shared/components/app-auth-layout/app-auth-layout.component';
 import { AsyncPipe, NgClass } from '@angular/common';
 import { ButtonDirective } from 'primeng/button';

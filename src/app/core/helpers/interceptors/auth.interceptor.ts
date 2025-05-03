@@ -6,7 +6,7 @@ import {
 import { catchError, finalize, from, mergeMap, throwError } from 'rxjs';
 import { Store } from '@ngxs/store';
 import { inject } from '@angular/core';
-import { AuthState } from '../../../shared/store/auth/auth-state';
+import { AuthState } from '../../../shared/store/auth/auth.state';
 import { Logout, RefreshToken } from '../../../shared/store/auth/auth.actions';
 import { BearerToken } from '../../models/bearer-token/bearer-token';
 import { LoadingService } from '../../../shared/services/loading.service';

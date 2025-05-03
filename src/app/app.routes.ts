@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
 import { provideStates } from '@ngxs/store';
-import { EmailConfirmationState } from './shared/store/email-confirmation/email-confirmation-state';
+import { EmailConfirmationState } from './shared/store/email-confirmation/email-confirmation.state';
 import { guestGuard } from './core/helpers/guards/guest.guard';
 import { authGuard } from './core/helpers/guards/auth.guard';
+import { FeedState } from './shared/store/feed/feed.state';
 
 export const routes: Routes = [
   {
@@ -55,6 +56,7 @@ export const routes: Routes = [
     path: 'feed',
     loadComponent: () =>
       import('./pages/feed/feed.component').then((c) => c.FeedComponent),
+    providers: [provideStates([FeedState])],
     data: { showHeader: true },
   },
   {

@@ -1,0 +1,25 @@
+<cdk-virtual-scroll-viewport
+  [itemSize]="50"
+  class="w-full h-full overflow-auto"
+  (scrolledIndexChange)="onScrollIndexChange( $event)"
+>
+  <ng-container *cdkVirtualFor="let row of chunkedLooks()">
+    <div class="flex gap-4 px-4 py-2">
+      <div
+        *ngFor="let item of row"
+        class="w-64 bg-white rounded-lg shadow p-2"
+      >
+        <h3 class="text-lg font-semibold">{{ item.name }}</h3>
+        <div class="grid grid-cols-2 gap-2">
+          <img
+            *ngFor="let image of item.productImageUrls"
+            [src]="image"
+            class="rounded w-full aspect-square object-cover"
+          />
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</cdk-virtual-scroll-viewport>
+
+

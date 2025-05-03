@@ -9,7 +9,7 @@ import { providePrimeNG } from 'primeng/config';
 import { definePreset } from '@primeng/themes';
 import { environment } from '../environments/environments';
 import { API_URL, IDENTITY_API_URL } from './tokens';
-import { AuthState } from './shared/store/auth/auth-state';
+import { AuthState } from './shared/store/auth/auth.state';
 import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { MessageService } from 'primeng/api';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';

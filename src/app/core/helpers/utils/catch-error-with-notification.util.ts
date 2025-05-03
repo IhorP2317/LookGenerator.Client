@@ -20,7 +20,6 @@ export function catchErrorWithNotification<T = unknown>(
           summary = problemDetails.title || 'Error';
           detail = problemDetails.detail || 'An error occurred.';
 
-          // Handle common status codes
           switch (error.status) {
             case 400:
               severity = 'warn';

@@ -5,7 +5,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { Store } from '@ngxs/store';
-import { EmailConfirmationState } from '../../shared/store/email-confirmation/email-confirmation-state';
+import { EmailConfirmationState } from '../../shared/store/email-confirmation/email-confirmation.state';
 import { ActivatedRoute } from '@angular/router';
 import { filter, map, switchMap, take } from 'rxjs';
 import { ConfirmEmail } from '../../shared/store/email-confirmation/email-confirmation.actions';
