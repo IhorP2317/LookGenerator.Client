@@ -1,0 +1,42 @@
+::ng-deep .outer-product-dialog .p-dialog-content {
+ padding: 0;
+}
+
+.scroll-hover-wrapper {
+  position: relative;
+}
+
+
+.option-scroller {
+  overflow-x: auto;
+  white-space: nowrap;
+
+
+  scrollbar-width: none;
+}
+.option-scroller::-webkit-scrollbar {
+  height: 0;
+}
+
+
+.scroll-hover-wrapper:hover .option-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: var(--p-indigo-500) transparent;
+}
+
+.scroll-hover-wrapper:hover .option-scroller::-webkit-scrollbar {
+  height: 4px;
+}
+.scroll-hover-wrapper:hover .option-scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-hover-wrapper:hover .option-scroller::-webkit-scrollbar-thumb {
+  background-color: var(--p-indigo-500);
+  border-radius: 8px;
+}
+.scroll-hover-wrapper:hover .option-scroller::-webkit-scrollbar-thumb:hover {
+  background-color: var(--p-indigo-700);
+}
+
+
+

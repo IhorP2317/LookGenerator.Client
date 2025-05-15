@@ -1,29 +1,54 @@
-<header class="app-header shadow-sm">
-  <!-- Left section content here -->
+<header class="app-header shadow-sm flex items-center justify-between px-4 h-16 bg-white z-50">
 
-  <div class="ml-auto flex items-center gap-6 ">
-    @if(currentUser() != null) {
-    <div class="flex items-center gap-3 cursor-pointer" (click)="menu.toggle($event)">
-      <!-- User Avatar -->
-      <div class="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center transition-all hover:bg-blue-200">
-        <i class="pi pi-user text-blue-600 text-lg"></i>
+  <div class="flex items-center gap-6">
+
+    <a
+      routerLink="/feed"
+      class="flex items-center gap-2 text-blue-100 hover:text-blue-600 transition-colors"
+    >
+      <i class="pi pi-box text-lg"></i>
+      <span class="hidden sm:inline text-sm font-medium">Feed</span>
+    </a>
+
+    <a
+      routerLink="/looks/management"
+      class="flex items-center gap-2 group"
+    >
+  <span
+    class="w-5 h-5 bg-blue-100 group-hover:bg-blue-600 mask mask-custom transition"
+  ></span>
+      <span class="hidden sm:inline text-sm font-medium text-blue-100 group-hover:text-blue-600">
+    Create Look
+  </span>
+    </a>
+
+  </div>
+
+
+  <div class="ml-auto flex items-center gap-6">
+    @if (currentUser() != null) {
+      <div class="flex items-center gap-3 cursor-pointer" (click)="menu.toggle($event)">
+        <div
+          class="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center transition-all hover:bg-blue-200"
+        >
+          <i class="pi pi-user text-blue-600 text-lg"></i>
+        </div>
+        <span class="text-sm font-medium">{{ currentUser()?.userName }}</span>
       </div>
 
-      <!-- User Name -->
-      <span class="text-sm font-medium">
-          {{currentUser()?.userName}}
-        </span>
-    </div>
-
-    <p-menu #menu [model]="items" [popup]="true" appendTo="body">
-    </p-menu>
-  } @else {
-      <a routerLink="/login" class="px-4 py-2  hover:text-gray-900 rounded-md transition-colors
-                hover:bg-gray-100">
+      <p-menu #menu [model]="profileItems" [popup]="true" appendTo="body"></p-menu>
+    } @else {
+      <a
+        routerLink="/login"
+        class="px-4 py-2 hover:text-gray-900 rounded-md transition-colors hover:bg-gray-100"
+      >
         Login
       </a>
-      <a routerLink="/login" class="px-4 py-2  text-white rounded-md hover:bg-blue-700 transition-colors
-                focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
+      <a
+        routerLink="/signup"
+        class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors
+          focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+      >
         Sign up
       </a>
     }

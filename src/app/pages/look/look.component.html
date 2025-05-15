@@ -1,0 +1,233 @@
+<div class="text-gray-100 py-6">
+  @if (look()) {
+    <div class="container mx-auto px-4">
+      <!-- Header Section -->
+      <h1 class="text-2xl md:text-3xl font-bold  text-center mb-8">{{ look()?.name }}</h1>
+
+      <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Left Column: Products Grid -->
+        <div class="w-full lg:w-2/3">
+          <!-- Products Count -->
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold ">Products</h2>
+            <span class="text-sm text-gray-400">{{ look()?.products?.length || 0 }} items</span>
+          </div>
+
+          <!-- Products Grid - ENLARGED PHOTOS -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            @for (product of look()?.products; track product.id) {
+              <div class="group relative">
+                <!-- Product Image Container - LARGER ASPECT RATIO -->
+                <div class="aspect-[4/5] rounded-lg overflow-hidden bg-gray-800 shadow-lg">
+                  <img
+                    [src]="product.productImage"
+                    [alt]="product.name"
+                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+
+                  <!-- Hover Overlay -->
+                  <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                    <div class="text-base font-semibold truncate text-white">{{ product.name }}</div>
+                    <div class="text-sm text-gray-200 truncate mt-1">
+                      {{ product.price | currency: 'UAH':'symbol':'':'uk' }}
+                    </div>
+                    <div class="text-sm text-gray-300 truncate">
+                      {{ product.color }}{{ product.sizes ? ' ' + product.sizes : '' }}
+                    </div>
+                    <!-- Quick Action Buttons -->
+                    <div class="flex gap-3 mt-3">
+                      <a [href]="product.productLink"
+                         class="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-500 hover:bg-indigo-600 text-white transition-colors shadow-md">
+                        <i class="pi pi-shopping-cart text-base"></i>
+                      </a>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Right Column: Look Details -->
+        <div class="w-full lg:w-1/3">
+          <div class="bg-gray-800 rounded-xl p-6 shadow-xl self-start">
+
+            <!-- Summary Header -->
+            <div class="flex justify-between items-center mb-6">
+              <h3 class="text-xl font-semibold text-indigo-400">Look Summary</h3>
+
+              <!-- Status Badge -->
+              <div class="flex items-center gap-1 text-sm px-3 py-1 rounded-full"
+                   [ngClass]="{
+                  'bg-green-900/40 text-green-400': look()?.lookStatus === LookStatus.Public,
+                  'bg-yellow-900/40 text-yellow-400': look()?.lookStatus === LookStatus.Private,
+                  'bg-gray-700/40 text-gray-400': look()?.lookStatus === LookStatus.Draft
+                }">
+                <i class="pi text-sm"
+                   [ngClass]="{
+                    'pi-eye': look()?.lookStatus === LookStatus.Public,
+                    'pi-eye-slash': look()?.lookStatus === LookStatus.Private,
+                    'pi-pencil': look()?.lookStatus === LookStatus.Draft
+                  }"></i>
+                <span>{{ LookStatusLabel[look()?.lookStatus ?? 0] }}</span>
+              </div>
+            </div>
+
+            <!-- Look Creator Panel -->
+            @if (look()?.creator) {
+              <div class="bg-gray-700/50 rounded-lg p-4 mb-6 flex items-center gap-3">
+                <div class="bg-indigo-500 text-white p-2 rounded-full flex items-center justify-center">
+                  <i class="pi pi-user text-lg"></i>
+                </div>
+                <div>
+                  <div class="text-white font-medium">{{ look()?.creator?.userName }}</div>
+                  <div class="text-xs text-gray-300">Created this look
+                    at {{ look()?.createdAt | date:'mediumDate':'':'en-US' }}
+                  </div>
+                </div>
+              </div>
+            } @else {
+              <div class="bg-gray-700/50 rounded-lg p-4 mb-6 flex items-center gap-3">
+                <div class="bg-gray-600 text-gray-300 p-2 rounded-full flex items-center justify-center">
+                  <i class="pi pi-user text-lg"></i>
+                </div>
+                <div>
+                  <div class="text-gray-300 font-medium">Unknown creator</div>
+                  <div class="text-xs text-gray-400">No creator information</div>
+                </div>
+              </div>
+            }
+
+            <!-- Look Description -->
+            <div class="prose prose-invert text-gray-300 mb-6">
+              {{ look()?.description }}
+            </div>
+
+            <!-- Price & Date -->
+            <div class="mb-3">
+
+              <div class="flex flex-col gap-2">
+                <div class="text-center">
+                  <p class="text-gray-300 text-md mb-1">{{ look()?.colorPalette }} Color Palette</p>
+                  <div class="flex flex-row justify-start flex-wrap">
+                    @for (color of colours(); track color.name) {
+                      <div class="flex items-center gap-2 cursor-pointer p-2 rounded transition-all">
+                            <span
+                              class="w-5 h-5 rounded"
+                              [ngStyle]="{ background: color.hex }"
+                            ></span>
+                        <span class="text-sm font-medium capitalize">{{ color.name }}</span>
+                      </div>
+                    }
+                  </div>
+
+                </div>
+
+
+                <p class="text-gray-400 text-sm my-1 ml-auto">Total Price</p>
+                <p class="text-2xl font-bold text-indigo-500 mb-4 ml-auto">
+                  {{ look()?.totalPrice || 0 | currency:'UAH':'symbol':'':'uk' }}
+                </p>
+
+              </div>
+
+
+            </div>
+
+            <!-- Attributes -->
+            @if (attributes()) {
+              <div class="border-t border-gray-700 pt-4 mb-6">
+
+                <div class="flex flex-col content-center gap-x-4 gap-y-3 text-sm text-center">
+                  @if (attributes()['Occasion']) {
+                    <h4 class="text-xl font-medium text-indigo-300 my-3">Occasion</h4>
+                    <div class="flex justify-center content-center gap-3">
+                      @for (attribute of attributes()['Occasion']; track attribute) {
+                        <div
+                          class="px-3 py-1 rounded-full border text-sm cursor-pointer transition-all
+                   !bg-indigo-500 !text-white !border-indigo-500">
+                          {{ attribute }}
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  @if (attributes()['Season']) {
+                    <h4 class="text-xl font-medium text-indigo-300 mb-3">Season</h4>
+                    <div class="flex justify-center content-center gap-3">
+                      @for (attribute of attributes()['Season']; track attribute) {
+                        <div
+                          class="px-3 py-1 rounded-full border text-sm cursor-pointer transition-all
+                   !bg-indigo-500 !text-white !border-indigo-500">
+                          {{ attribute }}
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  @if (attributes()['Style']) {
+                    <h4 class="text-xl font-medium text-indigo-300 mb-3">Style</h4>
+                    <div class="flex justify-center content-center gap-4">
+                      @for (attribute of attributes()['Style']; track attribute) {
+                        <div
+                          class="px-3 py-1 rounded-full border text-sm cursor-pointer transition-all
+                   !bg-indigo-500 !text-white !border-indigo-500">
+                          {{ attribute }}
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Action Buttons -->
+            <div class="border-t border-gray-700 pt-4 flex flex-wrap gap-3 justify-between items-center">
+              <!-- Like & Pin Buttons -->
+              <div class="flex gap-4">
+                <button class="flex items-center gap-1 group" (click)="onReactionsChange(ReactionTypeEnum.Like)">
+                  <i class="pi text-xl transition-colors duration-200"
+                     [ngClass]="{
+                      'pi-heart-fill text-pink-500 group-hover:text-pink-600': look()?.isLiked && !!currentUser(),
+                      'pi-heart text-gray-400 group-hover:text-pink-500': !look()?.isLiked || !currentUser()
+                    }"></i>
+                  <span class="text-sm"
+                        [ngClass]="{
+                      'text-pink-500 group-hover:text-pink-600': look()?.isLiked && !!currentUser(),
+                      'text-gray-400 group-hover:text-pink-500': !look()?.isLiked || !currentUser()
+                    }">{{ look()?.likeCount ?? 0 }}</span>
+                </button>
+
+                <button class="flex items-center gap-1 group" (click)="onReactionsChange(ReactionTypeEnum.Pin)">
+                  <i class="pi text-xl transition-colors duration-200"
+                     [ngClass]="{
+                      'pi-bookmark-fill text-yellow-500 group-hover:text-yellow-600': look()?.isPinned && !!currentUser(),
+                      'pi-bookmark text-gray-400 group-hover:text-yellow-500': !look()?.isPinned || !currentUser()
+                    }"></i>
+                  <span class="text-sm"
+                        [ngClass]="{
+                      'text-yellow-500 group-hover:text-yellow-600': look()?.isPinned && !!currentUser(),
+                      'text-gray-400 group-hover:text-yellow-500': !look()?.isPinned || !currentUser()
+                    }">{{ look()?.pinCount ?? 0 }}</span>
+                </button>
+              </div>
+
+              <!-- More Button -->
+              @if (look()?.creator?.id === currentUser()?.id || currentUser()?.role == 'Admin')  {
+                <div class="flex gap-2">
+                  <button
+                    class="w-10 h-10 flex items-center justify-center bg-gray-700 hover:bg-gray-600 rounded-full transition-colors" (click)="menu.toggle($event)">
+                    <i class="pi pi-ellipsis-h text-gray-300"></i>
+                  </button>
+                  <p-menu #menu [model]="profileItems" [popup]="true" appendTo="body"></p-menu>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

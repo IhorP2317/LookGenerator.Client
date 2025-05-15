@@ -1,0 +1,95 @@
+<div
+  [formGroup]="filtersForm"
+  class="flex flex-wrap md:flex-nowrap justify-center md:justify-start items-center gap-4 px-4 py-4 w-full"
+>
+  <!-- Search Input -->
+  <div class="w-full sm:w-auto">
+    <p-iconfield>
+      <p-inputicon styleClass="pi pi-search" />
+      <input
+        type="text"
+        formControlName="searchTerm"
+        pInputText
+        placeholder="Search"
+        class="w-full sm:w-64"
+      />
+    </p-iconfield>
+  </div>
+
+  <!-- Gender Dropdown -->
+  <div class="w-full sm:w-auto">
+    <p-select
+      [options]="preparedGenders()"
+      formControlName="gender"
+      [placeholder]="'All Genders'"
+      class="w-full sm:w-48"
+    ></p-select>
+  </div>
+
+  <!-- Pills + Palette icon container -->
+  <div class="flex w-full items-center md:flex-1 gap-2">
+    <!-- Pills Scrollable Container -->
+    <div
+      class="overflow-x-auto whitespace-nowrap flex-1 [-webkit-overflow-scrolling:touch] hide-scrollbar"
+    >
+      <div class="inline-flex gap-2">
+        @for (attribute of attributeOptions(); track attribute.id) {
+          <div
+            class="px-3 py-1 rounded-full border text-sm cursor-pointer transition-all
+                   hover:bg-blue-100 hover:border-blue-300
+                   text-indigo-700 border-gray-300 bg-white"
+            [ngClass]="{
+              '!bg-indigo-500 !text-white !border-indigo-500':
+                selectedAttributeIds().includes(attribute.id)
+            }"
+            (click)="toggleAttribute(attribute.id)"
+          >
+            {{ attribute.name }}
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Palette Icon (Not Scrollable) -->
+    <div
+      class="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full cursor-pointer hover:bg-blue-50 text-indigo-500 border-gray-300 border"
+      [ngClass]="{'bg-blue-100': selectedColors().length > 0}"
+      (click)="showColors.set(true)"
+    >
+      <i class="pi pi-palette text-xl"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<p-dialog
+  [(visible)]="showColors"
+  modal="true"
+  header="Select Colours"
+  [style]="{ width: '30rem' }"
+  [baseZIndex]="10000"
+  [breakpoints]="{ '640px': '90vw' }"
+>
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    @for (color of colours(); track color.name) {
+      <div
+        class="flex items-center gap-2 cursor-pointer p-2 rounded transition-all hover:text-indigo-700"
+        (click)="toggleColor(color.name)"
+        [ngClass]="{
+      '!bg-indigo-500 !text-white !border-indigo-500': selectedColors().includes(color.name),
+      'hover:bg-blue-50 border-gray-300': !selectedColors().includes(color.name)
+    }"
+      >
+    <span
+      class="w-5 h-5 rounded"
+      [ngStyle]="{ background: color.hex }"
+    ></span>
+        <span class="text-sm font-medium capitalize">{{ color.name }}</span>
+      </div>
+    }
+
+
+  </div>
+</p-dialog>

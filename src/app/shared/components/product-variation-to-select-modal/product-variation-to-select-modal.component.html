@@ -1,0 +1,205 @@
+<p-dialog
+  header="Select Product"
+  [modal]="true"
+  [(visible)]="visible"
+  [baseZIndex]="1000"
+  [style]="{ width: '100%', maxWidth: '80vw', height: '80vh' }"
+  [contentStyle]="{ overflow: 'auto', height: '100%' }"
+  styleClass="outer-product-dialog"
+>
+  <div [formGroup]="form()" class="px-4 py-4 space-y-4">
+
+    <!-- Row 1: Search Input + Color Button -->
+    <div class="flex flex-row items-center gap-4 w-full">
+      <!-- Search Input -->
+      <div class="flex-1">
+        <p-iconfield>
+          <p-inputicon styleClass="pi pi-search" />
+          <input
+            type="text"
+            formControlName="searchTerm"
+            pInputText
+            placeholder="Search"
+            class="w-full"
+          />
+        </p-iconfield>
+      </div>
+
+      <!-- Color Palette Button -->
+      <div
+        class="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full cursor-pointer hover:bg-blue-50 text-indigo-500 border border-gray-300"
+        [ngClass]="{ 'bg-blue-100': form().controls.color.value !== null }"
+        (click)="showColors.set(true)"
+      >
+        <i class="pi pi-palette text-xl"></i>
+      </div>
+    </div>
+
+
+    <!-- Row 2: Genders (centered horizontally) -->
+    <div class="scroll-hover-wrapper">
+      <div class="flex justify-center gap-2 overflow-x-auto whitespace-nowrap option-scroller">
+        @for (gender of genders(); track $index) {
+          <div
+            class="px-3 py-1 rounded-full border text-sm cursor-pointer transition-all hover:bg-blue-100 hover:border-blue-300 text-indigo-700 border-gray-300 bg-white"
+            [ngClass]="{'!bg-indigo-500 !text-white !border-indigo-500': form().controls.gender.value === gender}"
+            (click)="toggleGender(gender)"
+          >
+            {{ gender }}
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Row 3: Attributes (horizontally scrollable) -->
+    <div class="scroll-hover-wrapper">
+      <div class="flex justify-center max-sm:justify-start overflow-x-auto whitespace-nowrap gap-2 py-1 option-scroller">
+        @for (attribute of form().controls.attributes.controls; track $index) {
+          <div
+            class="px-3 py-1 rounded-full border text-sm cursor-pointer transition-all hover:bg-blue-100 hover:border-blue-300 text-indigo-700 border-gray-300 bg-white"
+            [ngClass]="{'!bg-indigo-500 !text-white !border-indigo-500': attribute.controls.isSelected.value}"
+            (click)="attribute.controls.isSelected.setValue(!attribute.controls.isSelected.value)"
+          >
+            {{ attribute.controls.attribute.value.name }}
+          </div>
+        }
+      </div>
+    </div>
+    <!-- Row 4: Product Categories (horizontally scrollable) -->
+    <div class="scroll-hover-wrapper">
+    <div class="flex overflow-x-auto whitespace-nowrap gap-2 py-1 option-scroller">
+      @for (category of productCategories(); track category.id) {
+        <div
+          class="px-3 py-1 rounded-full border text-sm cursor-pointer transition-all hover:bg-blue-100 hover:border-blue-300 text-indigo-700 border-gray-300 bg-white"
+          [ngClass]="{'!bg-indigo-500 !text-white !border-indigo-500': form().controls.category.value === category.id}"
+          (click)="form().controls.category.setValue(category.id)"
+        >
+          {{ category.name }}
+        </div>
+      }
+    </div>
+    </div>
+    <!-- Row 5: Products Container (paginated, flex wrap) -->
+    <div class="flex flex-wrap gap-4 overflow-auto px-4 sm:pr-6 sm:pl-24 justify-center sm:justify-start">
+      @for (product of products().items; track product.productItemId) {
+        <div
+          class="w-40 rounded-xl overflow-hidden shadow-sm transition-transform hover:scale-[1.02] cursor-pointer border border-gray-300 dark:border-gray-600 m-1"
+          [ngClass]="{'border-indigo-500 shadow-md': form().controls.product.value?.id === product.id}"
+          (click)="onProductSelect( product)"
+        >
+          <img [src]="product.productImage" [alt]="product.name" class="h-32 w-full object-cover"/>
+          <div class="text-sm font-medium p-2 text-center truncate">{{ product.name }}</div>
+        </div>
+      }
+    </div>
+    <div class="card flex justify-center w-full px-2 ">
+      @if (products().totalCount > 0) {
+        <p-paginator
+          class="w-full max-w-xs sm:max-w-md md:max-w-lg"
+          [first]="(form().controls.productPageNumber.value - 1) * form().controls.productPageSize.value"
+          [rows]="form().controls.productPageSize.value"
+          [totalRecords]="products().totalCount"
+          [rowsPerPageOptions]="[5, 10, 20]"
+          (onPageChange)="onPageChange($event)">
+        </p-paginator>
+      }
+    </div>
+
+
+  </div>
+
+
+</p-dialog>
+<!-- Nested Dialog for Color Selection -->
+<p-dialog
+  [(visible)]="showColors"
+  modal="true"
+  header="Select Colours"
+  [style]="{ width: '30rem' }"
+  [baseZIndex]="10000"
+  [breakpoints]="{ '640px': '90vw' }"
+>
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    @for (color of colors(); track color.name) {
+      <div
+        class="flex items-center gap-2 cursor-pointer p-2 rounded transition-all hover:text-indigo-700"
+        (click)="toggleColor(color)"
+        [ngClass]="{
+            '!bg-indigo-500 !text-white !border-indigo-500': form().controls.color.value?.name === color.name,
+            'hover:bg-blue-50 border-gray-300': form().controls.color.value?.name !== color.name,
+          }"
+      >
+        <span class="w-5 h-5 rounded" [ngStyle]="{ background: color.hex }"></span>
+        <span class="text-sm font-medium capitalize">{{ color.name }}</span>
+      </div>
+    }
+  </div>
+</p-dialog>
+<p-dialog
+  [(visible)]="showSizes"
+  modal="true"
+  header="Select Sizes"
+  [baseZIndex]="10000"
+  [breakpoints]="{ '640px': '90vw' }"
+>
+  <div class="flex flex-col justify-center content-center gap-4">
+      <div
+        class="w-40 rounded-xl overflow-hidden shadow-sm border border-gray-300 dark:border-gray-600 mx-auto"
+      >
+        <img [src]="form().value.product?.productImage" [alt]="form().value.product?.name" class="h-32 w-full object-cover"/>
+        <div class="text-sm font-medium p-2 text-center truncate">{{ form().value.product?.name }}</div>
+      </div>
+    <div class="flex flex-wrap justify-center gap-4">
+      @for (sizeForm of form().controls.sizes.controls; track sizeForm?.controls?.id?.value) {
+        @if (sizeForm !== null) {
+          <div
+            class="group px-3 py-1.5 rounded-md border text-xs sm:text-sm font-medium cursor-pointer transition-all duration-150 text-center bg-white border-gray-300 text-indigo-700 hover:bg-indigo-100 hover:border-indigo-300 hover:text-indigo-700 scale-100 hover:scale-[1.04]"
+            [ngClass]="{
+          '!bg-indigo-500 !text-white !border-indigo-500': sizeForm.controls.isSelected.value
+        }"
+            (click)="sizeForm.controls.isSelected.setValue(!sizeForm.controls.isSelected.value)"
+          >
+            <div class="leading-tight">
+              <div class="font-semibold">{{ sizeForm.controls.size.value ?? 'Unknown' }}</div>
+              <div
+                class="text-[0.65rem] sm:text-xs text-gray-300 font-normal group-hover:text-inherit transition-colors"
+              >
+                {{ sizeForm.controls.price.value | currency:'₴' }}
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+
+    <div class="flex justify-center">
+      <p-button
+        label="Place"
+        styleClass="
+      !bg-transparent
+      !text-white
+
+      border-transparent
+      hover:!bg-white
+      hover:!bg-white
+      hover:!text-indigo-500
+      active:!bg-white
+      active:!text-indigo-500
+      transition-colors
+      duration-150
+      rounded-md
+      px-6
+      py-2
+      font-semibold
+    "
+        (onClick)="onProductVariationsPlace()"
+      ></p-button>
+    </div>
+
+
+
+
+  </div>
+
+</p-dialog>

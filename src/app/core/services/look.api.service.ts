@@ -23,6 +23,22 @@ export class LookApiService {
       filters: filters,
     });
   }
+  getLook(id: string): Observable<Look> {
+    return this.http.get<Look>(this.apiUrl + `/looks/${id}`);
+  }
+  createLook(
+    name: string,
+    description: string | null,
+    colorPalette: string,
+    productVariationIds: string[],
+  ) {
+    return this.http.post<string>(this.apiUrl + '/looks/create', {
+      name,
+      description,
+      colorPalette,
+      productVariationIds,
+    });
+  }
 
   generateLook(
     gender: string,
@@ -63,7 +79,7 @@ export class LookApiService {
     });
   }
   updateLookStatus(id: string, status: LookStatus) {
-    return this.http.put<void>(this.apiUrl + `/looks/${id}/status`, {
+    return this.http.patch<void>(this.apiUrl + `/looks/${id}`, {
       status,
     });
   }

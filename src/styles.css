@@ -13,10 +13,14 @@
 html,
 body {
   height: 100%;
+  margin: 0;
+  padding: 0;
 }
+
 body{
   font-family: sans-serif;
 }
+
 .base-wrapper {
   display: flex;
   justify-content: center;
@@ -24,7 +28,16 @@ body{
   height: 100%;
 }
 .has-header .base-wrapper {
-  height: calc(100% - var(--header-height));
+  height: calc(100% - var(--header-height,4rem));
+}
+
+
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
 }
 
 

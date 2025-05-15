@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { Logout } from '../../store/auth/auth.actions';
 import { Menu } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-header',
@@ -16,7 +17,7 @@ export class AppHeaderComponent {
   private store: Store = inject(Store);
   currentUser = this.store.selectSignal(AuthState.getCurrentUser);
 
-  items: MenuItem[] = [
+  profileItems: MenuItem[] = [
     { label: 'Profile', icon: 'pi pi-id-card' },
     {
       label: 'Log Out',
@@ -24,6 +25,7 @@ export class AppHeaderComponent {
       command: () => this.onLogout(),
     },
   ];
+
   onLogout() {
     this.store.dispatch(new Logout());
   }

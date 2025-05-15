@@ -8,6 +8,7 @@ export const LookFilterType = {
   PageSize: 6,
   OrderByAscending: 7,
   OrderByDescending: 8,
+  CreatedByCurrentUser: 9,
 } as const;
 export type LookFilterTypeEnum =
   (typeof LookFilterType)[keyof typeof LookFilterType];

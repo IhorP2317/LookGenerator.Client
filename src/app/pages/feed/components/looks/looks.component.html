@@ -1,25 +1,113 @@
 <cdk-virtual-scroll-viewport
-  [itemSize]="50"
-  class="w-full h-full overflow-auto"
-  (scrolledIndexChange)="onScrollIndexChange( $event)"
+  [itemSize]="rowHeight"
+  class="virtual-scroll-viewport"
+  (scrolledIndexChange)="onScrollIndexChange($event)"
+
 >
-  <ng-container *cdkVirtualFor="let row of chunkedLooks()">
-    <div class="flex gap-4 px-4 py-2">
-      <div
-        *ngFor="let item of row"
-        class="w-64 bg-white rounded-lg shadow p-2"
-      >
-        <h3 class="text-lg font-semibold">{{ item.name }}</h3>
-        <div class="grid grid-cols-2 gap-2">
-          <img
-            *ngFor="let image of item.productImageUrls"
-            [src]="image"
-            class="rounded w-full aspect-square object-cover"
-          />
+  <div *cdkVirtualFor="let row of rows(); trackBy: trackByIndex"  #virtualRow class="virtual-row">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4 auto-rows-fr">
+      @for (item of row; track item.id) {
+        <div #lookCard class="look-card group flex flex-col">
+          <div class="bg-white rounded-2xl shadow transition hover:shadow-lg overflow-hidden flex flex-col flex-1 h-full">
+          <!-- Images grid -->
+
+
+            <div class="flex flex-row flex-wrap  gap-1 p-3 flex-grow">
+              @for (image of item.productImageUrls; track image) {
+                <div class="flex items-center test overflow-hidden rounded-md bg-gray-50 aspect-square" (click)="navigateToLook(item.id)">
+                  <img
+                    [src]="image"
+                    alt="product"
+                    class="object-cover w-full h-full transition duration-300 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                </div>
+              }
+            </div>
+
+            <!-- Name and Description -->
+            <div class="px-4 pt-2 pb-4" (click)="navigateToLook(item.id)">
+              <h3 class="text-md text-center font-semibold text-indigo-700 truncate">
+                {{ item.name }}
+              </h3>
+              @if (item.description) {
+                <p class="text-sm text-indigo-500 truncate mt-1">
+                  {{ item.description }}
+                </p>
+              }
+
+            </div>
+
+            <!-- User Info -->
+            <div class="border-t border-gray-100 px-4 py-2 flex items-center gap-2">
+              @if (item.creator) {
+                <span class="pi pi-user text-gray-400 bg-gray-200 rounded-full p-1 text-sm"></span>
+                <span class="text-xs text-gray-600 truncate">
+                {{ item.creator.userName }}
+              </span>
+              } @else {
+                <span class="pi pi-user text-gray-400 bg-gray-200 rounded-full p-1 text-sm"></span>
+                <span class="text-xs text-gray-600">Unknown user</span>
+              }
+              <div class="flex ml-auto justify-center items-center gap-4">
+                <!-- Like -->
+                <div class="flex items-center gap-1 cursor-pointer group" (click)="toggleReaction(item.id,ReactionTypeEnum.Like)">
+                  <i
+                    class="pi text-lg transition-colors duration-200"
+                    [ngClass]="{
+        'pi-heart-fill text-pink-500 group-hover:text-pink-600': item.isLiked && currentUser(),
+        'pi-heart text-gray-400 group-hover:text-pink-500': !item.isLiked || !currentUser()
+      }"
+                  ></i>
+                  <span class="text-xs text-gray-600 group-hover:text-red-500">{{ item.likeCount }}</span>
+                </div>
+
+                <!-- Pin -->
+                <div class="flex items-center gap-1 cursor-pointer group" (click)="toggleReaction(item.id,ReactionTypeEnum.Pin)">
+                  <i
+                    class="pi text-lg transition-colors duration-200"
+                    [ngClass]="{
+        'pi-bookmark-fill text-yellow-500 group-hover:text-yellow-600': item.isPinned && currentUser(),
+        'pi-bookmark text-gray-400 group-hover:text-yellow-500': !item.isPinned || !currentUser()
+      }"
+                  ></i>
+                  <span class="text-xs text-gray-600 group-hover:text-yellow-500">{{ item.pinCount }}</span>
+                </div>
+                <!-- Conditional buttons for creator or admin -->
+                @if (currentUser()?.role == 'Admin' || currentUser()?.id === item.creator?.id) {
+                  <div class="flex items-center gap-1 cursor-pointer group" (click)="onManageLook(item.id, 'hide')">
+                    <i
+                      class="pi pi-eye-slash text-lg text-gray-400 group-hover:text-blue-600 transition-colors"
+                    ></i>
+                  </div>
+
+                  <div class="flex items-center gap-1 cursor-pointer group" (click)="onManageLook(item.id, 'delete')">
+                    <i
+                      class="pi pi-trash text-lg text-gray-400 group-hover:text-red-600 transition-colors"
+                    ></i>
+                  </div>
+                }
+
+
+              </div>
+
+
+            </div>
+          </div>
         </div>
-      </div>
+      }
     </div>
-  </ng-container>
+  </div>
+  @if (rows().length === 0 && (loading$ | async) === false) {
+    <div class="flex flex-col items-center justify-center flex-1 h-full  text-gray-500">
+      <i class="pi pi-eye-slash text-4xl mb-4 text-gray-400"></i>
+      <p class="text-lg font-medium">No looks found</p>
+      <p class="text-sm text-gray-400">Try adjusting your filters or creating a new look</p>
+    </div>
+
+  }
 </cdk-virtual-scroll-viewport>
+
+
 
 

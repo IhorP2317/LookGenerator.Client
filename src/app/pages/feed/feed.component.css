@@ -1,7 +1,14 @@
-.base-wrapper {
+:host{
+  overflow: hidden;
+  display: block;
+}
+.feed-wrapper {
+
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
   overflow: hidden;
 }

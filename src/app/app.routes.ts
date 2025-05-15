@@ -4,6 +4,9 @@ import { EmailConfirmationState } from './shared/store/email-confirmation/email-
 import { guestGuard } from './core/helpers/guards/guest.guard';
 import { authGuard } from './core/helpers/guards/auth.guard';
 import { FeedState } from './shared/store/feed/feed.state';
+import { LookState } from './shared/store/look/look.state';
+import { LookManagementState } from './shared/store/look-management/look-management.state';
+import { lookOwnershipGuard } from './core/helpers/guards/look-ownership.guard';
 
 export const routes: Routes = [
   {
@@ -58,6 +61,42 @@ export const routes: Routes = [
       import('./pages/feed/feed.component').then((c) => c.FeedComponent),
     providers: [provideStates([FeedState])],
     data: { showHeader: true },
+  },
+  {
+    path: 'looks/management',
+    loadComponent: () =>
+      import('./pages/look-management/look-management.component').then(
+        (c) => c.LookManagementComponent,
+      ),
+    data: { showHeader: true },
+    providers: [provideStates([LookManagementState])],
+    canActivate: [authGuard],
+  },
+  {
+    path: 'looks/management/:id',
+    loadComponent: () =>
+      import('./pages/look-management/look-management.component').then(
+        (c) => c.LookManagementComponent,
+      ),
+    data: { showHeader: true },
+    providers: [provideStates([LookManagementState])],
+    canActivate: [authGuard, lookOwnershipGuard],
+  },
+  {
+    path: 'looks/:id',
+    loadComponent: () =>
+      import('./pages/look/look.component').then((c) => c.LookComponent),
+    data: { showHeader: true },
+    providers: [provideStates([LookState])],
+  },
+  {
+    path: 'looks/generate',
+    loadComponent: () =>
+      import('./pages/look-generation/look-generation.component').then(
+        (c) => c.LookGenerationComponent,
+      ),
+    data: { showHeader: true },
+    canActivate: [authGuard],
   },
   {
     path: '',

@@ -40,12 +40,12 @@ export class AuthState implements NgxsOnInit {
 
   @Selector([AuthState])
   static getCurrentUser(state: AuthStateModel) {
-    return state.currentUser;
+    return state?.currentUser;
   }
 
   @Selector([AuthState])
   static getBearerToken(state: AuthStateModel) {
-    return state.bearerToken;
+    return state?.bearerToken;
   }
 
   @Selector()

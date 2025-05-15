@@ -1,3 +1,21 @@
 :root{
   --header-height: 4rem;
+  --looks-filters-height: 5.5rem;
+
+}
+@media (min-width: 747px) {
+  :root {
+    --looks-filters-height: 7.5rem;
+  }
+}
+
+@media (max-width: 746px) {
+  :root {
+    --looks-filters-height: 13.5rem;
+  }
+}
+@media (max-width: 429px) {
+  :root {
+    --looks-filters-height: 11.75rem; /* or a value that ensures nothing is cut off */
+  }
 }

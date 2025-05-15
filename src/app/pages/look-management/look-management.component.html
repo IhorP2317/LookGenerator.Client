@@ -1,0 +1,157 @@
+<div class="h-full">
+  <form [formGroup]="form" (ngSubmit)="onSaveLookClicked()" class="max-w-3xl mx-auto p-6 space-y-6">
+    <div class="flex items-center justify-between mb-6">
+      <!-- Centered Heading -->
+      <div class="flex-1 text-center">
+        <h1 class="text-2xl font-bold dark:text-white">
+          @if (lookToManage() === null) {
+            Add Look
+          } @else {
+            Edit Look
+          }
+        </h1>
+      </div>
+
+      <!-- Right-Aligned Button -->
+      <p-button
+        type="submit"
+        label="Save Look"
+        class="ml-4"
+        [disabled]="form.invalid"
+      ></p-button>
+    </div>
+
+
+
+    <!-- Look Name -->
+    <div class="form-field  mb-4">
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-tag"></p-inputicon>
+        <input
+          pInputText
+          formControlName="name"
+          placeholder="Look Name"
+          class="input-text"
+        />
+      </p-iconfield>
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <small class="validation-text error-text">
+          Name is required
+        </small>
+      }
+    </div>
+
+    <!-- Description -->
+    <div class="form-field  mb-4">
+ <textarea
+   pTextarea
+   formControlName="description"
+   rows="3"
+   placeholder="Description"
+   class="input-text"
+ ></textarea>
+    </div>
+
+    <!-- Color Palette -->
+    <div class="form-field  mb-4">
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-palette"></p-inputicon>
+        <input
+          pInputText
+          formControlName="colorPalette"
+          placeholder="Color Palette"
+          class="input-text"
+        />
+      </p-iconfield>
+    </div>
+
+    <!-- Look Status -->
+    @if(lookToManage()){
+      <div class="form-field  mb-6">
+        <label class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-3 block">Look Status</label>
+        <p-selectButton
+          [options]="[
+        { label: 'Draft', value: 0 },
+        { label: 'Private', value: 1 },
+        { label: 'Public', value: 2 }
+      ]"
+          formControlName="lookStatus"
+          optionLabel="label"
+          optionValue="value"
+          class="w-full"
+        />
+      </div>
+    }
+
+
+    <!-- Product Variations -->
+    <div class="flex justify-between items-center mb-6">
+      <h2 class=" text-base font-semibold block text-gray-700 dark:text-gray-200">
+        Products
+      </h2>
+      <p-button size="small" icon="pi pi-plus" label="Add Product"  styleClass="text-sm" (onClick)="productModal.onOpen()"></p-button>
+    </div>
+
+    <div class="form-field mt-6 mb-4 flex flex-col sm:flex-row flex-wrap gap-6 justify-center sm:justify-start items-center">
+    @for (variation of form.controls.productVariations.controls; track $index) {
+        <div
+          [formGroup]="variation"
+          class="w-48 rounded-xl overflow-hidden transition-transform hover:scale-[1.02]"
+        >
+
+          <div class="relative w-48 rounded-xl overflow-hidden transition-transform hover:scale-[1.02]">
+            <!-- Delete Icon -->
+            <button
+              type="button"
+              (click)="removeVariation($index)"
+              class="absolute top-2 right-2 z-10 text-gray-400 hover:text-red-500 transition-colors"
+            >
+              <i class="pi pi-trash"></i>
+            </button>
+
+            <!-- Image -->
+            <div class="p-2 flex justify-center items-center h-36">
+              <img
+                [src]="variation.controls.imageUrl.value"
+                [alt]="variation.controls.name.value"
+                class="max-h-full object-contain rounded-lg"
+              />
+            </div>
+
+            <!-- Info -->
+            <div class="p-3 flex flex-col gap-2 text-center">
+              <p class="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2">
+                {{ variation.controls.name.value }}
+              </p>
+              <div class="text-sm text-gray-600 dark:text-gray-300 flex justify-center gap-2 font-medium">
+                <span>{{ variation.controls.size.value }}</span>
+                <span class="text-gray-400 dark:text-gray-400">|</span>
+                <span>{{ variation.controls.price.value | currency: 'UAH':'symbol':'':'uk' }}</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+
+
+    <!-- Submit Button -->
+
+  </form>
+
+</div>
+  <app-product-variation-to-select-modal
+    #productModal
+    [form]="selectProductForm"
+    [genders]="genders()"
+    [productCategories]="(productCategories$ | async) ?? []"
+    [products]="products()"
+    [colors]="colors()"
+    (genderChanged)="onGenderChanged($event)"
+    (productFiltersChanged)="onProductFiltersChanged($event)"
+    (productSelected)="onProductSelected($event)"
+    (selectionConfirmed)="onProductAdded($event)"
+    (selectedProductVariations)="onAddingProductVariations()"
+  ></app-product-variation-to-select-modal>
+

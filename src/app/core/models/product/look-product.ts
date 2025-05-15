@@ -14,4 +14,6 @@ export interface LookProduct {
   productImage: string | null;
   productLink: string | null;
   productVariations: ProductVariation[];
+  price: number;
+  sizes: string | null;
 }

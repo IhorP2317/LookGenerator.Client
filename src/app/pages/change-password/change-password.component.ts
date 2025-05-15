@@ -53,7 +53,6 @@ export class ChangePasswordComponent implements OnInit {
     console.log(this.currentUser());
   }
   onSubmit(): void {
-    debugger;
     if (this.form.valid && !!this.currentUser()) {
       this.store
         .dispatch(

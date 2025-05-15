@@ -1,4 +1,8 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  LOCALE_ID,
+  provideZoneChangeDetection,
+} from '@angular/core';
 import { provideRouter, Route } from '@angular/router';
 import Aura from '@primeng/themes/aura';
 
@@ -102,5 +106,6 @@ export const appConfig: ApplicationConfig = {
     MessageService,
     provideHttpClient(withInterceptors([authInterceptor])),
     provideAnimationsAsync(),
+    { provide: LOCALE_ID, useValue: 'uk' },
   ],
 };

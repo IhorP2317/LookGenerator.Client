@@ -8,5 +8,12 @@ export interface FeedLook {
   colorPalette: string;
   lookStatus: LookStatus;
   productImageUrls: string[];
+  likeCount: number;
+  pinCount: number;
+  isLiked: boolean;
+  isPinned: boolean;
   creator: LookUser | null;
+}
+export interface FeedLookWithPage extends FeedLook {
+  metaPage: number;
 }
