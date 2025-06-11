@@ -1,0 +1,27 @@
+
+.look-card {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  height: 968px;
+}
+
+.look-card:hover {
+  transform: translateY(-4px);
+}
+
+.auto-rows-fr {
+  grid-auto-rows: 1fr;
+}
+.additional-space{
+  width: calc(50% - 0.25rem);
+}
+
+
+
+
+
+
+
+
+
+

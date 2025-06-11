@@ -22,6 +22,8 @@ import {
   combineLatest,
   debounceTime,
   distinctUntilChanged,
+  map,
+  Observable,
   startWith,
   tap,
 } from 'rxjs';
@@ -29,10 +31,11 @@ import {
   ProductFilterPayload,
   ProductFilterType,
 } from '../../../core/models/helpers/product-filter-type';
-import { CurrencyPipe, NgClass, NgStyle } from '@angular/common';
+import { AsyncPipe, CurrencyPipe, NgClass, NgStyle } from '@angular/common';
 import { ProductVariationForm } from '../../../core/models/helpers/product-variation-form';
 import { Paginator, PaginatorState } from 'primeng/paginator';
 import { Button } from 'primeng/button';
+import { ProductVariationSelectionMode } from '../../../core/models/helpers/product-variation-selection-mode';
 @UntilDestroy()
 @Component({
   selector: 'app-product-variation-to-select-modal',
@@ -48,6 +51,7 @@ import { Button } from 'primeng/button';
     Paginator,
     CurrencyPipe,
     Button,
+    AsyncPipe,
   ],
   templateUrl: './product-variation-to-select-modal.component.html',
   styleUrl: './product-variation-to-select-modal.component.css',
@@ -59,19 +63,44 @@ export class ProductVariationToSelectModalComponent implements OnInit {
   productCategories = input.required<ProductCategory[]>();
   products = input.required<PagedList<ProductToSelect>>();
   colors = input.required<ColorOption[]>();
+  selectionMode = input<ProductVariationSelectionMode>('multiple');
+
   genderChanged = output<Gender>();
   productFiltersChanged = output<ProductFilterPayload>();
   productSelected = output<ProductToSelect>();
-  selectionConfirmed = output<ProductVariationForm[]>();
   selectedProductVariations = output<void>();
   showColors = model<boolean>(false);
   showSizes = model<boolean>(false);
   visible = model<boolean>(false);
 
+  disableUnselected$: Observable<boolean> | undefined;
+
   ngOnInit(): void {
     this.onGenderChange();
     this.onProductFilterChange();
     this.onProductChange();
+    this.initializeDisableSizeButton();
+  }
+  toggleVariationSelection(variation: FormGroup<ProductVariationForm>): void {
+    const form = this.form();
+    const sizesArray = form.controls.sizes;
+    const isSelected = variation.controls.isSelected.value;
+    if (this.selectionMode() === 'single') {
+      if (isSelected) {
+        variation.controls.isSelected.setValue(false);
+      } else {
+        // If clicking on unselected item, clear all others first, then select this one
+        for (let i = 0; i < sizesArray.length; i++) {
+          sizesArray
+            .at(i)
+            .controls.isSelected.setValue(false, { emitEvent: false });
+        }
+        variation.controls.isSelected.setValue(true);
+      }
+    } else {
+      // Multiple selection mode - simple toggle
+      variation.controls.isSelected.setValue(!isSelected);
+    }
   }
   onGenderChange() {
     const form = this.form();
@@ -198,7 +227,14 @@ export class ProductVariationToSelectModalComponent implements OnInit {
     productForm.setValue(product);
   }
   onProductVariationsPlace() {
+    const size = this.form().value.sizes;
     this.selectedProductVariations.emit();
     this.showSizes.set(false);
+  }
+  private initializeDisableSizeButton() {
+    this.disableUnselected$ = this.form().controls.sizes.valueChanges.pipe(
+      startWith(this.form().controls.sizes.value),
+      map((sizes) => !sizes.some((size) => size.isSelected)),
+    );
   }
 }

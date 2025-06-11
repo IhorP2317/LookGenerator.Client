@@ -1,0 +1,125 @@
+<!-- Updated template with fixed height grid -->
+<div class="w-full">
+  @if (isLoading()) {
+    <!-- Pagination Header Skeleton -->
+    <div class="flex items-center justify-between mb-4 px-2">
+      <p-skeleton shape="circle" size="2.5rem"></p-skeleton>
+
+      <div class="flex items-center gap-4">
+        <p-skeleton width="12rem" height="2rem"></p-skeleton>
+      </div>
+
+      <p-skeleton shape="circle" size="2.5rem"></p-skeleton>
+    </div>
+
+    <!-- Loading Grid -->
+    <div class="looks-container">
+      <div class="looks-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
+        @for (_ of [1,2,3,4]; track $index) {
+          <div class="w-full">
+            <p-skeleton
+              height="100%"
+              styleClass="block w-full rounded-2xl shadow-md"
+              animation="wave">
+            </p-skeleton>
+          </div>
+
+        }
+      </div>
+    </div>
+  } @else if (!generatedLooks() || generatedLooks().items.length === 0) {
+    <div class="empty-state-container">
+      <div class="empty-state-content">
+        <div class="w-24 h-24 rounded-full bg-indigo-50 flex items-center justify-center mb-4">
+          <i class="pi pi-image text-3xl text-indigo-300"></i>
+        </div>
+        <h3 class="text-lg font-semibold mb-2">No looks generated yet</h3>
+        <p class="text-gray-500 max-w-md">
+          Start creating your perfect look by selecting attributes and measurements below.
+        </p>
+      </div>
+    </div>
+ } @else{
+    @if (generatedLooks().items.length < generatedLooks().totalCount) {
+      <div class="flex items-center justify-between mb-4 px-2">
+        <button
+          type="button"
+          (click)="onPreviousPageClick()"
+          [disabled]="!generatedLooks().hasPreviousPage"
+          class="flex items-center justify-center w-10 h-10 rounded-full border border-indigo-200 bg-white text-indigo-600 hover:bg-indigo-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105"
+          [class.opacity-50]="!generatedLooks().hasPreviousPage"
+        >
+          <i class="pi pi-arrow-left text-lg"></i>
+        </button>
+
+        <div class="flex items-center gap-4">
+          <span class="text-sm font-medium">Generated Looks</span>
+          <div class="flex items-center gap-2 text-sm text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
+            <span class="font-semibold">{{ generatedLooks().page }}</span>
+            <span class="text-gray-400">of</span>
+            <span class="font-semibold">{{ totalPages() }}</span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          (click)="onNextPageClick()"
+          [disabled]="!generatedLooks().hasNextPage"
+          class="flex items-center justify-center w-10 h-10 rounded-full border border-indigo-200 bg-white text-indigo-600 hover:bg-indigo-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105"
+          [class.opacity-50]="!generatedLooks().hasNextPage"
+        >
+          <i class="pi pi-arrow-right text-lg"></i>
+        </button>
+      </div>
+    }
+
+
+    <!-- Container with fixed minimum height -->
+    <div class="looks-container">
+      <!-- Looks Grid with minimum height -->
+      <div class="looks-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
+        @for (item of generatedLooks().items; track item.id) {
+          <div  class="look-card group flex flex-col">
+            <div class="bg-white rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl overflow-hidden flex flex-col h-full" [ngClass]="{'ring-4 ring-indigo-400': item.isNew}">
+              <!-- Images grid -->
+              <div class="flex flex-row flex-wrap gap-1 p-3 flex-grow min-h-[200px]" (click)="navigateToLook(item.id)">
+                @for (image of item.productImageUrls; track image) {
+                  <div class="flex items-center additional-space overflow-hidden rounded-md bg-gray-50 aspect-square">
+                    <img
+                      [src]="image"
+                      alt="product"
+                      class="object-cover w-full h-full transition duration-300 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                  </div>
+                }
+              </div>
+
+              <!-- Name and Description -->
+              <div class="px-4 pt-2 pb-4" (click)="navigateToLook(item.id)">
+                <h3 class="text-md text-center font-semibold text-indigo-700 truncate">
+                  {{ item.name }}
+                </h3>
+                @if (item.description) {
+                  <p class="text-sm text-indigo-500 truncate mt-1 text-center">
+                    {{ item.description }}
+                  </p>
+                }
+              </div>
+              <div class="border-t border-gray-100 px-4 py-2 flex justify-center items-center gap-16">
+                <div class="flex items-center gap-1 cursor-pointer group" (click)="onLikeLook(item.id)">
+                  <i class="pi pi-thumbs-up text-indigo-500 hover:text-indigo-700 text-lg transition-colors duration-200"></i>
+                </div>
+                <div class="flex items-center gap-1 cursor-pointer group" (click)="onDeleteLook(item.id)">
+                  <i class="pi pi-thumbs-down text-indigo-500 hover:text-indigo-700 text-lg transition-colors duration-200"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+
+</div>

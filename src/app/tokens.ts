@@ -5,6 +5,9 @@ import { EmailConfirmationModel } from './shared/store/email-confirmation/email-
 import { FeedModel } from './shared/store/feed/feed.model';
 import { LookStateModel } from './shared/store/look/look.state.model';
 import { LookManagementStateModel } from './shared/store/look-management/look-management.state.model';
+import { SizeGuideStateModel } from './shared/store/size-guide/size-guide.state.model';
+import { UserProfileStateModel } from './shared/store/user-profile/user-profile.state.model';
+import { LookGenerationStateModel } from './shared/store/look-generation/look-generation.state.model';
 
 export const API_URL = new InjectionToken<string>('Api URL');
 export const IDENTITY_API_URL = new InjectionToken<string>('Identity Api URL');
@@ -16,3 +19,11 @@ export const FEED_STATE_TOKEN = new StateToken<FeedModel>('feed');
 export const LOOK_STATE_TOKEN = new StateToken<LookStateModel>('look');
 export const LOOK_MANAGEMENT_STATE_TOKEN =
   new StateToken<LookManagementStateModel>('lookManagement');
+export const SIZE_GUIDE_STATE_TOKEN = new StateToken<SizeGuideStateModel>(
+  'sizeGuide',
+);
+export const USER_PROFILE_STATE_TOKEN = new StateToken<UserProfileStateModel>(
+  'userProfile',
+);
+export const LOOK_GENERATION_STATE_TOKEN =
+  new StateToken<LookGenerationStateModel>('lookGeneration');

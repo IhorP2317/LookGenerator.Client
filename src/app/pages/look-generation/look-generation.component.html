@@ -1,1 +1,275 @@
-<p>look-generation works!</p>
+<div class="w-full p-4 space-y-6 flex flex-col md:flex-row justify-center items-start">
+  <div class="w-full px-4">
+
+    <app-draft-look-feed
+      [generatedLooks]="generatedLooks()"
+      [isLoading]="isLoading()"
+    (nextPage) = "onNextPageClick($event)"
+    (likedLook)="onLikeLookClick($event)"
+    (deletedLook)="onDeleteLookClick($event)">
+    </app-draft-look-feed>
+  </div>
+  <div class="flex flex-col justify-center items-center gap-4 max-md:w-full">
+    <p-card class="w-full max-w-xs sm:max-w-sm">
+      <div class="flex flex-col justify-center content-center gap-4">
+
+
+
+        <div [formGroup]="measuresForm" class="space-y-5">
+          <h2 class="text-lg font-bold text-white mb-3">Measurements</h2>
+
+
+          <div class="flex items-center bg-gray-800 rounded-xl px-4 py-2 focus-within:ring-2 ring-indigo-500 transition">
+            <img src="assets/icons/chest.svg" alt="Chest" class="measurement-icon" />
+            <input
+              type="number"
+              formControlName="chestContour"
+              placeholder="Chest Contour"
+              min="0.1"
+              class="bg-transparent outline-none w-full text-white placeholder-gray-400"
+            />
+          </div>
+
+
+          <div class="flex items-center bg-gray-800 rounded-xl px-4 py-2 focus-within:ring-2 ring-indigo-500 transition">
+            <img src="assets/icons/hip.svg" alt="Hip" class="measurement-icon" />
+            <input
+              type="number"
+              formControlName="hipContour"
+              placeholder="Hip Contour"
+              min="0.1"
+              class="bg-transparent outline-none w-full text-white placeholder-gray-400"
+            />
+          </div>
+
+
+
+          <div class="flex items-center bg-gray-800 rounded-xl px-4 py-2 focus-within:ring-2 ring-indigo-500 transition">
+            <img src="assets/icons/waist.svg" alt="Waist" class="measurement-icon" />
+            <input
+              type="number"
+              formControlName="waistContour"
+              placeholder="Waist Contour"
+              min="0.1"
+              class="bg-transparent outline-none w-full text-white placeholder-gray-400"
+            />
+          </div>
+
+          <!-- Foot -->
+
+          <div class="flex items-center bg-gray-800 rounded-xl px-4 py-2 focus-within:ring-2 ring-indigo-500 transition">
+            <img src="assets/icons/feet.svg" alt="Foot" class="measurement-icon" />
+            <input
+              type="number"
+              formControlName="footMeasure"
+              placeholder="Foot Measure"
+              min="0.1"
+              class="bg-transparent outline-none w-full text-white placeholder-gray-400"
+            />
+          </div>
+        </div>
+      </div>
+
+    </p-card>
+    <p-card class="w-full max-w-xs sm:max-w-sm">
+      <div class="flex flex-col gap-2" [formGroup]=attributesForm>
+        <div class="flex flex-row justify-center items-center gap-4 w-full">
+          <div class="scroll-hover-wrapper">
+            <div class="flex justify-center gap-2 overflow-x-auto whitespace-nowrap option-scroller">
+              @for (gender of genders(); track $index) {
+                <div
+                  class="px-3 py-1 rounded-full border text-sm cursor-pointer transition-all hover:bg-blue-100 hover:border-blue-300 text-indigo-700 border-gray-300 bg-white"
+                  [ngClass]="{'!bg-indigo-500 !text-white !border-indigo-500': attributesForm.controls.gender.value === gender}"
+                  (click)="attributesForm.controls.gender.setValue(gender)"
+                >
+                  {{ gender }}
+                </div>
+              }
+            </div>
+          </div>
+          <div
+            class="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full cursor-pointer hover:bg-blue-50 text-indigo-500 border-gray-300 border"
+            [ngClass]="{'bg-blue-100': isAnyColorSelected$ | async}"
+            (click)="showColors.set(true)"
+          >
+            <i class="pi pi-palette text-xl"></i>
+          </div>
+        </div>
+
+        <div class="scroll-hover-wrapper">
+          <div class="flex justify-start overflow-x-auto whitespace-nowrap gap-2 py-1 option-scroller">
+            @for (attribute of attributesForm.controls.attributes.controls; track $index) {
+              <div
+                class="px-3 py-1 rounded-full border text-sm cursor-pointer transition-all hover:bg-blue-100 hover:border-blue-300 text-indigo-700 border-gray-300 bg-white"
+                [ngClass]="{'!bg-indigo-500 !text-white !border-indigo-500': attribute.controls.isSelected.value}"
+                (click)="attribute.controls.isSelected.setValue(!attribute.controls.isSelected.value)"
+              >
+                {{ attribute.controls.attribute.value.name }}
+              </div>
+            }
+          </div>
+        </div>
+        <div class="flex justify-center mt-6">
+          <p-button
+            label="Generate by attributes"
+            styleClass="
+      border-0
+      bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600
+      text-white
+      font-bold
+      px-8 py-3
+      rounded-xl
+      shadow-xl
+      hover:from-indigo-700 hover:to-purple-700
+      transition-all
+      hover:scale-105
+      tracking-wide
+      focus:ring-4 focus:ring-indigo-200
+    "
+            [disabled]="(generateByAttributesDisable$ | async) || isLoading()"
+            (onClick)="onGenerateLookSubmit()"
+          ></p-button>
+        </div>
+
+      </div>
+    </p-card>
+    <p-card class="w-full max-w-xs sm:max-w-sm">
+      <div class="flex flex-row justify-center relative">
+        <div [formGroup]="itemForm" class="w-48 rounded-xl overflow-hidden p-2 relative">
+          @if (itemForm.controls.selectedVariation.value !== null) {
+            <!-- Move button outside the scaling container -->
+            <button
+              type="button"
+              (click)="onItemRemoved()"
+              class="absolute top-2 right-2 z-10 w-6 h-6 bg-white rounded-full shadow-md border border-gray-200 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+              title="Remove"
+            >
+              <i class="pi pi-trash text-xs"></i>
+            </button>
+            <!-- Apply hover scale only to the product card -->
+            <div class="relative transition-transform hover:scale-[1.02]">
+              <div class="w-40 rounded-xl overflow-hidden shadow-sm cursor-pointer border border-gray-300 dark:border-gray-600 m-auto mt-2">
+                <img [src]="itemForm.controls.selectedVariation.value.imageUrl"
+                     [alt]="itemForm.controls.selectedVariation.value.name"
+                     class="h-32 w-full object-cover" />
+                <div class="text-sm font-medium p-2 text-center truncate">
+                  {{ itemForm.controls.selectedVariation.value.name }}
+                </div>
+                <div class="text-sm text-gray-600 dark:text-gray-300 flex justify-center gap-2 font-medium">
+                  <span>{{ itemForm.controls.selectedVariation.value.size }}</span>
+                  <span class="text-gray-400 dark:text-gray-400">|</span>
+                  <span>{{ itemForm.controls.selectedVariation.value.price | currency: 'UAH':'symbol':'':'uk' }}</span>
+                </div>
+              </div>
+            </div>
+          }
+          @else {
+            <div
+              class="flex flex-col items-center justify-center h-36 w-full cursor-pointer"
+              (click)="productModal.onOpen()"
+            >
+        <span
+          class="text-6xl mb-3 transition-transform hover:scale-110"
+          style="text-shadow: 1px 0 0 currentColor, 0 1px 0 currentColor, -1px 0 0 currentColor, 0 -1px 0 currentColor;"
+        >
+          <i class="pi pi-plus"></i>
+        </span>
+              <span class="text-lg font-bold tracking-wide text-center">
+          Select product for generation
+        </span>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="flex justify-center mt-6">
+        <p-button
+          label="Generate by item"
+          styleClass="
+      border-0
+      bg-white
+      text-indigo-600
+      font-bold
+      px-8 py-3
+      rounded-xl
+      shadow-xl
+      hover:bg-indigo-50
+      hover:text-indigo-800
+      hover:scale-105
+      transition-all
+      border
+      border-indigo-200
+      focus:ring-4 focus:ring-indigo-100
+    " [disabled]="(generateByItemDisable$ | async) || isLoading()"
+          (onClick)="onGenerateLookByItemSubmit()"
+        ></p-button>
+      </div>
+
+    </p-card>
+
+  </div>
+
+
+
+</div>
+<p-dialog
+  [(visible)]="showColors"
+  modal="true"
+  header="Select Colours"
+  [style]="{ width: '30rem' }"
+  [baseZIndex]="10000"
+  [breakpoints]="{ '640px': '90vw' }"
+>
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    @for (color of attributesForm.controls.colors.controls; track $index) {
+      <div
+        class="flex items-center gap-2 cursor-pointer p-2 rounded transition-all hover:text-indigo-700"
+        (click)="toggleColor(color)"
+        [ngClass]="{
+            '!bg-indigo-500 !text-white !border-indigo-500': color.value.isSelected,
+            'hover:bg-blue-50 border-gray-300': !color.value.isSelected,
+          }"
+      >
+        <span class="w-5 h-5 rounded" [ngStyle]="{ background: color.value.option?.hex }"></span>
+        <span class="text-sm font-medium capitalize">{{ color.value.option?.name }}</span>
+      </div>
+    }
+  </div>
+</p-dialog>
+<p-dialog
+  [(visible)]="isDialogVisible"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  header="Confirm Action"
+  [style]="{ width: '350px' }"
+>
+  <ng-template pTemplate="default">
+    <p class="text-sm text-blue-100">
+      Are you sure you want to
+      <strong>delete</strong>
+      this look?
+    </p>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-2">
+      <p-button label="Cancel" severity="secondary" (click)="isDialogVisible.set(false)" />
+      <p-button label="Submit" (click)="confirmLookDelete()" />
+    </div>
+  </ng-template>
+</p-dialog>
+<app-product-variation-to-select-modal
+  #productModal
+  [form]="selectProductForm"
+  [genders]="genders()"
+  [productCategories]="(productCategories$ | async) ?? []"
+  [products]="products()"
+  [colors]="colors()"
+  [selectionMode]="'single'"
+  (genderChanged)="onGenderChanged($event)"
+  (productFiltersChanged)="onProductFiltersChanged($event)"
+  (productSelected)="onProductSelected($event)"
+  (selectedProductVariations)="onAddingProductVariations()">
+</app-product-variation-to-select-modal>
+
+<app-floating-toolbar [showSizeGuide]="true" [showGenerator]="false" />

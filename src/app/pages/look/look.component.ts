@@ -2,7 +2,7 @@ import { Component, computed, inject, OnInit } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { MenuItem, MessageService } from 'primeng/api';
 import { LookState } from '../../shared/store/look/look.state';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { switchMap, take } from 'rxjs';
 import {
@@ -27,7 +27,7 @@ import { Menu } from 'primeng/menu';
 @UntilDestroy()
 @Component({
   selector: 'app-look',
-  imports: [CurrencyPipe, DatePipe, NgClass, NgStyle, Menu],
+  imports: [CurrencyPipe, DatePipe, NgClass, NgStyle, Menu, RouterLink],
   templateUrl: './look.component.html',
   styleUrl: './look.component.css',
 })

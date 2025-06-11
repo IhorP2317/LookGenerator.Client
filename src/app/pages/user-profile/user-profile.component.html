@@ -1,1 +1,238 @@
-<p>user-profile works!</p>
+<div class="flex flex-col gap-6 px-4 py-8 md:px-12 lg:px-20 text-white ">
+  @if (userFromProfile()){
+  <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 shadow-xl rounded-xl p-6 flex flex-col md:flex-row items-center gap-6 text-white text-center">
+    <div class="flex-shrink-0">
+      <div class="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-md overflow-hidden">
+        <i class="pi pi-user text-indigo-500 text-4xl"></i>
+      </div>
+    </div>
+
+    <div class="flex flex-col text-center md:text-left">
+      <div class="flex items-center justify-center md:justify-start gap-2">
+        <h2 class="text-3xl font-bold">{{ userFromProfile()?.userName }}</h2>
+        @if (userFromProfile()?.emailConfirmed) {
+          <img src="assets/icons/verified.png" class="w-6 h-6" alt="Verified" />
+        }
+      </div>
+      <span class="text-gray-200 text-lg">{{ userFromProfile()?.email }}</span>
+      <span class="text-indigo-200 font-medium">{{ userFromProfile()?.role }}</span>
+    </div>
+
+    <div class="flex gap-2 ml-auto">
+      @if (currentUser()?.id === userFromProfile()?.id) {
+
+          <p-button
+            label="Change Password"
+            icon="pi pi-lock"
+            styleClass = "border-0 bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg transition-all"
+          (onClick)="onChangePasswordClick()">
+          </p-button>
+
+      }
+      @if (
+        (currentUser()?.role === 'Admin' && currentUser()?.id !== userFromProfile()?.id) ||
+        (currentUser()?.role !== 'Admin' && currentUser()?.id === userFromProfile()?.id)
+        ) {
+        <p-button
+          label="Delete Account"
+          icon="pi pi-trash"
+          styleClass="border-0 bg-red-600 text-white hover:bg-red-700 shadow-lg transition-all"
+          (onClick)="onDeleteUserClick()"
+        ></p-button>
+      }
+
+    </div>
+  </div>
+
+
+  <h2 class="text-2xl font-semibold">Looks</h2>
+
+  <p-tabs [value]="lookScopeSignal()">
+
+  <p-tablist>
+      <p-tab [value]="LookFilterType.CreatedBy"  (click)="onTabChange(LookFilterType.CreatedBy)">
+        Created
+
+      </p-tab>
+    @if (currentUser()?.role === 'Admin' || currentUser()?.id === userFromProfile()?.id ) {
+      <p-tab [value]="LookFilterType.LikedBy" (click)="onTabChange(LookFilterType.LikedBy)">
+        Liked
+      </p-tab>
+
+      <p-tab [value]="LookFilterType.PinnedBy" (click)="onTabChange(LookFilterType.PinnedBy)">
+        Pinned
+      </p-tab>
+
+    }
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel [value]="LookFilterType.CreatedBy">
+        <ng-container *ngTemplateOutlet="looksList"></ng-container>
+      </p-tabpanel>
+      <p-tabpanel [value]="LookFilterType.LikedBy">
+        <ng-container *ngTemplateOutlet="looksList"></ng-container>
+      </p-tabpanel>
+      <p-tabpanel [value]="LookFilterType.PinnedBy">
+        <ng-container *ngTemplateOutlet="looksList"></ng-container>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
+
+  <ng-template #looksList>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4 auto-rows-fr">
+      @for (item of userProfileLooks().items; track item.id) {
+        <div  class="look-card group flex flex-col">
+          <div class="bg-white rounded-2xl shadow transition hover:shadow-lg overflow-hidden flex flex-col flex-1 h-full">
+            <!-- Images grid -->
+
+
+            <div class="flex flex-row flex-wrap  gap-1 p-3 flex-grow" (click)="navigateToLook(item.id)">
+              @for (image of item.productImageUrls; track image) {
+                <div class="flex items-center additional-space overflow-hidden rounded-md bg-gray-50 aspect-square">
+                  <img
+                    [src]="image"
+                    alt="product"
+                    class="object-cover w-full h-full transition duration-300 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                </div>
+              }
+            </div>
+
+            <!-- Name and Description -->
+            <div class="px-4 pt-2 pb-4" (click)="navigateToLook(item.id)" >
+              <h3 class="text-md text-center font-semibold text-indigo-700 truncate">
+                {{ item.name }}
+              </h3>
+              @if (item.description) {
+                <p class="text-sm text-indigo-500 truncate mt-1">
+                  {{ item.description }}
+                </p>
+              }
+
+            </div>
+
+            <!-- User Info -->
+            <div class="border-t border-gray-100 px-4 py-2 flex items-center gap-2">
+              @if ( form.controls.lookScope.value !== LookFilterType.CreatedBy){
+                @if (item.creator) {
+                  <a [routerLink]="['/users/',item.creator.id]">
+                        <span class="pi pi-user text-gray-400 bg-gray-200 rounded-full p-1 text-sm"></span>
+                        <span class="text-xs text-gray-600 truncate">
+                               {{ item.creator.userName }}
+                        </span>
+                  </a>
+
+                } @else {
+                  <span class="pi pi-user text-gray-400 bg-gray-200 rounded-full p-1 text-sm"></span>
+                  <span class="text-xs text-gray-600">Unknown user</span>
+                }
+              }
+
+              <div class="flex ml-auto justify-center items-center gap-4">
+                <!-- Like -->
+                <div class="flex items-center gap-1 cursor-pointer group" (click)="onReactionsChange(item.id,ReactionTypeEnum.Like)" >
+                  <i
+                    class="pi text-lg transition-colors duration-200"
+                    [ngClass]="{
+        'pi-heart-fill text-pink-500 group-hover:text-pink-600': item.isLiked && currentUser(),
+        'pi-heart text-gray-400 group-hover:text-pink-500': !item.isLiked || !currentUser()
+      }"
+                  ></i>
+                  <span class="text-xs text-gray-600 group-hover:text-red-500">{{ item.likeCount }}</span>
+                </div>
+
+                <!-- Pin -->
+                <div class="flex items-center gap-1 cursor-pointer group" (click)="onReactionsChange(item.id,ReactionTypeEnum.Pin)" >
+                  <i
+                    class="pi text-lg transition-colors duration-200"
+                    [ngClass]="{
+        'pi-bookmark-fill text-yellow-500 group-hover:text-yellow-600': item.isPinned && currentUser(),
+        'pi-bookmark text-gray-400 group-hover:text-yellow-500': !item.isPinned || !currentUser()
+      }"
+                  ></i>
+                  <span class="text-xs text-gray-600 group-hover:text-yellow-500">{{ item.pinCount }}</span>
+                </div>
+                <!-- Conditional buttons for creator or admin -->
+                @if (currentUser()?.role == 'Admin' || currentUser()?.id === item.creator?.id) {
+                  <div class="flex items-center gap-1 cursor-pointer group" (click)="onDeleteLookClick(item.id)">
+                    <i
+                      class="pi pi-trash text-lg text-gray-400 group-hover:text-red-600 transition-colors"
+                    ></i>
+                  </div>
+                }
+
+
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+      }
+
+
+    </div>
+    @if (userProfileLooks().items.length < userProfileLooks().totalCount) {
+      <p-paginator
+        [rows]="form.controls.pageSize.value"
+        [totalRecords]="userProfileLooks().totalCount"
+        [first]="(form.controls.page.value - 1) * form.controls.pageSize.value"
+        (onPageChange)="onPageChange($event)"
+        class="mt-6"
+      />
+    }
+    @if (userProfileLooks().items.length === 0) {
+      <div class="flex flex-col items-center justify-center flex-1 h-full  text-gray-500">
+        <i class="pi pi-eye-slash text-4xl mb-4 text-gray-400"></i>
+        <p class="text-lg font-medium">No looks found related to user {{userFromProfile()?.userName}}</p>
+      </div>
+
+    }
+  </ng-template>
+  } @else {
+    <div class="flex flex-col items-center justify-center py-16 bg-white rounded-xl shadow-md">
+      <div class="flex flex-col items-center text-center">
+        <i class="pi pi-eye-slash text-6xl text-gray-300 mb-4"></i>
+        <h2 class="text-3xl font-bold text-gray-700 mb-2">User Not Found</h2>
+        <p class="text-gray-500 mb-6 max-w-md">
+          The user profile you're looking for doesn't exist or has been removed.
+        </p>
+        <div class="flex gap-4">
+          <a routerLink="/" class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
+            <i class="pi pi-home"></i>
+            <span>Go to Home</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  }
+</div>
+
+<p-dialog
+  [(visible)]="confirmDialogVisible"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [header]="confirmDialogConfig?.title || 'Confirm Action'"
+  [style]="{ width: '350px' }"
+>
+  <ng-template pTemplate="default">
+    <p class="text-sm ">
+      {{ confirmDialogConfig?.message }}
+    </p>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end gap-2">
+      <p-button label="Cancel" severity="secondary" (click)="confirmDialogVisible.set(false)" />
+      <p-button
+        label="Delete"
+        severity="danger"
+        (click)="confirmAction()"
+      />
+    </div>
+  </ng-template>
+</p-dialog>
+

@@ -13,7 +13,5 @@ export interface FeedLook {
   isLiked: boolean;
   isPinned: boolean;
   creator: LookUser | null;
-}
-export interface FeedLookWithPage extends FeedLook {
-  metaPage: number;
+  isNew: boolean;
 }

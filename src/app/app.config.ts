@@ -19,6 +19,7 @@ import { MessageService } from 'primeng/api';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './core/helpers/interceptors/auth.interceptor';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { loadingInterceptor } from './core/helpers/interceptors/loading.interceptor';
 
 const customPreset = definePreset(Aura, {
   semantic: {
@@ -104,7 +105,7 @@ export const appConfig: ApplicationConfig = {
       useValue: environment.identityApiUrl,
     },
     MessageService,
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, loadingInterceptor])),
     provideAnimationsAsync(),
     { provide: LOCALE_ID, useValue: 'uk' },
   ],

@@ -4,4 +4,5 @@ import { BearerToken } from '../../../core/models/bearer-token/bearer-token';
 export interface AuthStateModel {
   currentUser: User | null;
   bearerToken: BearerToken | null;
+  isInitialized: boolean;
 }

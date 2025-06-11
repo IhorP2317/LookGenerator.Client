@@ -3,13 +3,12 @@ import {
   HttpInterceptorFn,
   HttpRequest,
 } from '@angular/common/http';
-import { catchError, finalize, from, mergeMap, throwError } from 'rxjs';
+import { catchError, from, mergeMap, throwError } from 'rxjs';
 import { Store } from '@ngxs/store';
 import { inject } from '@angular/core';
 import { AuthState } from '../../../shared/store/auth/auth.state';
 import { Logout, RefreshToken } from '../../../shared/store/auth/auth.actions';
 import { BearerToken } from '../../models/bearer-token/bearer-token';
-import { LoadingService } from '../../../shared/services/loading.service';
 
 function isAuthEndpoint(req: HttpRequest<unknown>): boolean {
   return req.url.endsWith('/login') || req.url.endsWith('/refresh');
@@ -29,9 +28,7 @@ function attachAccessToken(
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const store = inject(Store);
-  const loadingService = inject(LoadingService);
   const token = store.selectSnapshot(AuthState.getBearerToken);
-  loadingService.show();
   const modifiedReq = isAuthEndpoint(req) ? req : attachAccessToken(req, token);
 
   return next(modifiedReq).pipe(
@@ -56,6 +53,5 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
       return throwError(() => error);
     }),
-    finalize(() => loadingService.hide()),
   );
 };

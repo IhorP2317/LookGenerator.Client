@@ -3,7 +3,7 @@ import { AuthStateModel } from './auth-state.model';
 import { AUTH_STATE_TOKEN } from '../../../tokens';
 import { inject, Injectable } from '@angular/core';
 import { UserApiService } from '../../../core/services/user.api.service';
-import { Observable, of, switchMap, take, tap } from 'rxjs';
+import { finalize, Observable, of, switchMap, take, tap } from 'rxjs';
 import { BearerToken } from '../../../core/models/bearer-token/bearer-token';
 import { User } from '../../../core/models/user/user';
 import { patch } from '@ngxs/store/operators';
@@ -20,12 +20,14 @@ import {
 } from './auth.actions';
 import { catchErrorWithNotification } from '../../../core/helpers/utils/catch-error-with-notification.util';
 import { MessageService } from 'primeng/api';
+import { catchError } from 'rxjs/operators';
 
 @State<AuthStateModel>({
   name: AUTH_STATE_TOKEN,
   defaults: {
     currentUser: null,
     bearerToken: null,
+    isInitialized: false,
   },
 })
 @UntilDestroy()
@@ -35,7 +37,15 @@ export class AuthState implements NgxsOnInit {
   private messageService: MessageService = inject(MessageService);
 
   ngxsOnInit(ctx: StateContext<AuthStateModel>): void {
-    this.loadCurrentUser(ctx).pipe(untilDestroyed(this)).subscribe();
+    this.loadCurrentUser(ctx)
+      .pipe(
+        catchError(() => of(null)),
+        finalize(() => {
+          this.setIsInitialized(ctx, true);
+        }),
+        untilDestroyed(this),
+      )
+      .subscribe();
   }
 
   @Selector([AuthState])
@@ -51,6 +61,10 @@ export class AuthState implements NgxsOnInit {
   @Selector()
   static getIsAuthenticated(state: AuthStateModel): boolean {
     return !!state.bearerToken && !!state.currentUser;
+  }
+  @Selector()
+  static getIsInitialized(state: AuthStateModel): boolean {
+    return state.isInitialized;
   }
 
   @Action(Login)
@@ -139,7 +153,9 @@ export class AuthState implements NgxsOnInit {
     }
 
     return this.userApiService.getCurrentUser().pipe(
-      tap((user: User) => this.setCurrentUser(ctx, user)),
+      tap((user: User) => {
+        this.setCurrentUser(ctx, user);
+      }),
       catchErrorWithNotification<User | null>(this.messageService, null),
     );
   }
@@ -161,6 +177,16 @@ export class AuthState implements NgxsOnInit {
     ctx.setState(
       patch({
         bearerToken: tokens,
+      }),
+    );
+  }
+  private setIsInitialized(
+    ctx: StateContext<AuthStateModel>,
+    isInitialized: boolean,
+  ): void {
+    ctx.setState(
+      patch({
+        isInitialized,
       }),
     );
   }

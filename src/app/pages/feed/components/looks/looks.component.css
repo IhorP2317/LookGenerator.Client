@@ -27,7 +27,7 @@
   grid-auto-rows: 1fr;
 }
 
-.test{
+.additional-space{
   width: calc(50% - 0.25rem);
 }
 .virtual-scroll-viewport {

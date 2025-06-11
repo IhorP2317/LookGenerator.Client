@@ -1,0 +1,53 @@
+::ng-deep .size-guide-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  font-family: 'Inter', sans-serif;
+}
+
+::ng-deep .size-guide-table .p-datatable-thead > tr > th,
+::ng-deep .size-guide-table .p-datatable-tbody > tr > td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+::ng-deep .size-guide-table .p-datatable-thead > tr > th:first-child,
+::ng-deep .size-guide-table .p-datatable-tbody > tr > td:first-child {
+  text-align: left;
+}
+
+::ng-deep .size-guide-table .p-datatable-thead > tr > th {
+  background-color: #6366f1;
+  padding: 12px;
+  color: #ffffff;
+}
+
+::ng-deep .size-guide-table .p-datatable-tbody > tr:nth-child(even) {
+  background-color: #1f2937;
+}
+
+::ng-deep .size-guide-table .p-datatable-tbody > tr:nth-child(odd) {
+  background-color: #111827;
+}
+
+::ng-deep .size-guide-table .p-datatable-tbody > tr > td {
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+::ng-deep .scroll-hover-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+::ng-deep .scroll-hover-wrapper::-webkit-scrollbar-track {
+  background: #2d3748;
+  border-radius: 10px;
+}
+
+::ng-deep .scroll-hover-wrapper::-webkit-scrollbar-thumb {
+  background-color: #6366f1;
+  border-radius: 10px;
+}

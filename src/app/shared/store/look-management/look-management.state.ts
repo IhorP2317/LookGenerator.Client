@@ -7,6 +7,7 @@ import { LookApiService } from '../../../core/services/look.api.service';
 import { GetLook } from '../look/look.actions';
 import { switchMap, take, tap } from 'rxjs';
 import {
+  ClearLookToManage,
   CreateLook,
   GetLookManagementAttributeOptions,
   GetLookManagementProductCategories,
@@ -206,6 +207,10 @@ export class LookManagementState implements NgxsOnInit {
         switchMap(() => ctx.dispatch(new GetLookToManage(action.id))),
         take(1),
       );
+  }
+  @Action(ClearLookToManage)
+  clearLookToManage(ctx: StateContext<LookManagementStateModel>) {
+    ctx.patchState({ look: null, newLookId: null });
   }
 
   private setLook(

@@ -1,0 +1,64 @@
+.empty-state-container {
+  min-height: 700px; /* Або 100vh/100% для full screen */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.empty-state-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.look-card {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+.looks-grid {
+  min-height: 700px; /* Adjust this value based on your design needs */
+}
+
+.looks-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 600px; /* Ensures consistent container height */
+}
+.look-card:hover {
+  transform: translateY(-4px);
+}
+
+.additional-space {
+  width: calc(50% - 0.125rem);
+}
+
+@media (max-width: 640px) {
+  .additional-space {
+    width: calc(50% - 0.125rem);
+  }
+}
+
+.pagination-button {
+  transition: all 0.2s ease-in-out;
+}
+
+.pagination-button:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+}
+
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+
+
+
+
+
+
+

@@ -40,6 +40,47 @@ body{
   display: none; /* Safari and Chrome */
 }
 
+.robot-icon {
+  -webkit-mask: url('/assets/icons/robotic-stroke-rounded.svg') no-repeat center;
+  mask: url('/assets/icons/robotic-stroke-rounded.svg') no-repeat center;
+
+}
+
+.human-icon {
+  -webkit-mask: url('/assets/icons/size-chart-icon-2.svg') no-repeat center;
+  mask: url('/assets/icons/size-chart-icon-2.svg') no-repeat center;
+}
+.hip-icon {
+  -webkit-mask: url('/assets/icons/hip.svg') no-repeat center;
+  mask: url('/assets/icons/hip.svg') no-repeat center;
+}
+
+.robot-icon,
+.human-icon {
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  background-color: white;
+  -webkit-mask-size: 60%;
+  mask-size: 60%;
+}
 
 
+.chest-icon {
+  -webkit-mask: url('/assets/icons/chest.svg') no-repeat center/contain;
+  mask: url('/assets/icons/chest.svg') no-repeat center/contain;
+  background-color: #818cf8;
+}
 
+.hip-icon {
+  -webkit-mask: url('/assets/icons/hip.svg') no-repeat center/contain;
+  mask: url('/assets/icons/hip.svg') no-repeat center/contain;
+  background-color: #818cf8;
+}
+
+.feet-icon {
+  -webkit-mask: url('/assets/icons/feet.svg') no-repeat center/contain;
+  mask: url('/assets/icons/feet.svg') no-repeat center/contain;
+  background-color: #818cf8;
+}

@@ -1,11 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { AuthState } from '../../store/auth/auth.state';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Logout } from '../../store/auth/auth.actions';
 import { Menu } from 'primeng/menu';
-import { MenuItem } from 'primeng/api';
-import { Tooltip } from 'primeng/tooltip';
+import { MenuItem, MenuItemCommandEvent } from 'primeng/api';
 
 @Component({
   selector: 'app-header',
@@ -15,10 +14,15 @@ import { Tooltip } from 'primeng/tooltip';
 })
 export class AppHeaderComponent {
   private store: Store = inject(Store);
+  private router: Router = inject(Router);
   currentUser = this.store.selectSignal(AuthState.getCurrentUser);
 
   profileItems: MenuItem[] = [
-    { label: 'Profile', icon: 'pi pi-id-card' },
+    {
+      label: 'Profile',
+      icon: 'pi pi-id-card',
+      command: () => this.onProfileClick(),
+    },
     {
       label: 'Log Out',
       icon: 'pi pi-sign-out',
@@ -26,7 +30,11 @@ export class AppHeaderComponent {
     },
   ];
 
-  onLogout() {
+  private onProfileClick() {
+    void this.router.navigate(['/users/', this.currentUser()?.id]);
+  }
+
+  private onLogout() {
     this.store.dispatch(new Logout());
   }
 }

@@ -8,9 +8,15 @@ export const LookFilterType = {
   PageSize: 6,
   OrderByAscending: 7,
   OrderByDescending: 8,
-  CreatedByCurrentUser: 9,
+  CreatedBy: 9,
+  LikedBy: 10,
+  PinnedBy: 11,
 } as const;
 export type LookFilterTypeEnum =
   (typeof LookFilterType)[keyof typeof LookFilterType];
 
 export type LookFilterPayload = Partial<Record<LookFilterTypeEnum, any>>;
+export type LookScopeFilter =
+  | typeof LookFilterType.CreatedBy
+  | typeof LookFilterType.LikedBy
+  | typeof LookFilterType.PinnedBy;

@@ -14,7 +14,7 @@
 
             <div class="flex flex-row flex-wrap  gap-1 p-3 flex-grow">
               @for (image of item.productImageUrls; track image) {
-                <div class="flex items-center test overflow-hidden rounded-md bg-gray-50 aspect-square" (click)="navigateToLook(item.id)">
+                <div class="flex items-center additional-space overflow-hidden rounded-md bg-gray-50 aspect-square" (click)="navigateToLook(item.id)">
                   <img
                     [src]="image"
                     alt="product"
@@ -40,15 +40,19 @@
 
             <!-- User Info -->
             <div class="border-t border-gray-100 px-4 py-2 flex items-center gap-2">
-              @if (item.creator) {
-                <span class="pi pi-user text-gray-400 bg-gray-200 rounded-full p-1 text-sm"></span>
-                <span class="text-xs text-gray-600 truncate">
-                {{ item.creator.userName }}
-              </span>
-              } @else {
-                <span class="pi pi-user text-gray-400 bg-gray-200 rounded-full p-1 text-sm"></span>
-                <span class="text-xs text-gray-600">Unknown user</span>
-              }
+                @if(currentUser()?.id !== item.creator?.id){
+                  @if (item.creator) {
+                    <a [routerLink]="['/users/',item.creator.id]">
+                      <span class="pi pi-user text-gray-400 bg-gray-200 rounded-full p-1 text-sm"></span>
+                      <span class="text-xs text-gray-600 truncate">
+                      {{ item.creator.userName }}
+                     </span>
+                    </a>
+                  } @else {
+                    <span class="pi pi-user text-gray-400 bg-gray-200 rounded-full p-1 text-sm"></span>
+                    <span class="text-xs text-gray-600">Unknown user</span>
+                  }
+                }
               <div class="flex ml-auto justify-center items-center gap-4">
                 <!-- Like -->
                 <div class="flex items-center gap-1 cursor-pointer group" (click)="toggleReaction(item.id,ReactionTypeEnum.Like)">

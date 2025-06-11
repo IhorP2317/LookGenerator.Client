@@ -1,0 +1,19 @@
+<div
+  class="fixed bottom-6 right-6 z-50 cursor-pointer flex flex-col justify-center content-center gap-2"
+>
+  @if (showSizeGuide()) {
+    <div
+      pTooltip="Go to Size guide"
+      class="w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center shadow-lg transition duration-200 human-icon"
+      (click)="navigateToSizeGuide()"
+    ></div>
+  }
+
+  @if (showGenerator()) {
+    <div
+      pTooltip="Go to Generator"
+      class="w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center shadow-lg transition duration-200 robot-icon"
+      (click)="navigateToGeneration()"
+    ></div>
+  }
+</div>

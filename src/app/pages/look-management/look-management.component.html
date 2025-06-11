@@ -1,4 +1,4 @@
-<div class="h-full">
+<div>
   <form [formGroup]="form" (ngSubmit)="onSaveLookClicked()" class="max-w-3xl mx-auto p-6 space-y-6">
     <div class="flex items-center justify-between mb-6">
       <!-- Centered Heading -->
@@ -148,10 +148,13 @@
     [productCategories]="(productCategories$ | async) ?? []"
     [products]="products()"
     [colors]="colors()"
+    [selectionMode]="'multiple'"
     (genderChanged)="onGenderChanged($event)"
     (productFiltersChanged)="onProductFiltersChanged($event)"
     (productSelected)="onProductSelected($event)"
-    (selectionConfirmed)="onProductAdded($event)"
     (selectedProductVariations)="onAddingProductVariations()"
   ></app-product-variation-to-select-modal>
+
+<app-floating-toolbar [showSizeGuide]="true" [showGenerator]="!lookToManage()" />
+
 

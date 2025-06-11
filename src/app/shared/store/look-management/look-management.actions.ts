@@ -1,7 +1,5 @@
 import { LookStatus } from '../../../core/models/look/look-status';
-import { ProductCategoryFilterPayload } from '../../../core/models/helpers/product-category-filter-type';
 import { ProductFilterPayload } from '../../../core/models/helpers/product-filter-type';
-import { ProductVariationFilterPayload } from '../../../core/models/helpers/product-variation-filter-type';
 import { Gender } from '../../../core/models/helpers/gender';
 
 const ACTION_SCOPE = '[LookManagement]';
@@ -45,4 +43,7 @@ export class UpdateLook {
     public status: LookStatus,
     public productVariationIds: string[],
   ) {}
+}
+export class ClearLookToManage {
+  static readonly type = '[Look Management] Clear Look';
 }

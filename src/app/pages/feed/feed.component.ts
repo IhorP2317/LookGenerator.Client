@@ -3,17 +3,16 @@ import {
   Component,
   inject,
   model,
-  OnDestroy,
   OnInit,
 } from '@angular/core';
-import { Store } from '@ngxs/store';
+import { createDispatchMap, select } from '@ngxs/store';
 import { FeedState } from '../../shared/store/feed/feed.state';
 import { LooksComponent } from './components/looks/looks.component';
 import {
   CreateFeedReaction,
   DeleteFeedLook,
   DeleteFeedReaction,
-  GetLooks,
+  GetFeedLooks,
   HideLook,
   ResetFeedState,
 } from '../../shared/store/feed/feed.actions';
@@ -50,15 +49,23 @@ import { tap } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FeedComponent implements OnInit {
-  private store: Store = inject(Store);
   private messageService: MessageService = inject(MessageService);
-  looks = this.store.selectSignal(FeedState.getLooks);
-  attributeOptions = this.store.selectSignal(FeedState.getAttributeOptions);
-  colours = this.store.selectSignal(FeedState.getColours);
-  genders = this.store.selectSignal(FeedState.getGenders);
-  filters = this.store.selectSignal(FeedState.getFilters);
-  loadedPages = this.store.selectSignal(FeedState.getLoadedPages);
-  currentUser = this.store.selectSignal(AuthState.getCurrentUser);
+  actions = createDispatchMap({
+    getFeedLooks: GetFeedLooks,
+    resetFeedState: ResetFeedState,
+    createFeedReaction: CreateFeedReaction,
+    deleteFeedReaction: DeleteFeedReaction,
+    hideLook: HideLook,
+    deleteFeedLook: DeleteFeedLook,
+  });
+
+  looks = select(FeedState.getLooks);
+  attributeOptions = select(FeedState.getAttributeOptions);
+  colours = select(FeedState.getColours);
+  genders = select(FeedState.getGenders);
+  filters = select(FeedState.getFilters);
+  loadedPages = select(FeedState.getLoadedPages);
+  currentUser = select(AuthState.getCurrentUser);
   lookToManage: { lookId: string; action: 'hide' | 'delete' } | null = null;
   isDialogVisible = model(false);
   ngOnInit() {
@@ -103,10 +110,7 @@ export class FeedComponent implements OnInit {
       delete merged[LookFilterType.Colours];
     }
 
-    this.store
-      .dispatch(new GetLooks(merged))
-      .pipe(untilDestroyed(this))
-      .subscribe();
+    this.actions.getFeedLooks(merged).pipe(untilDestroyed(this)).subscribe();
   }
 
   onReactionsChange({
@@ -132,10 +136,10 @@ export class FeedComponent implements OnInit {
       reactionType === ReactionTypeEnum.Like ? look.isLiked : look.isPinned;
 
     const reactionCommand = isAlreadyReacted
-      ? new DeleteFeedReaction(lookId, reactionType)
-      : new CreateFeedReaction(lookId, reactionType);
+      ? this.actions.deleteFeedReaction(lookId, reactionType)
+      : this.actions.createFeedReaction(lookId, reactionType);
 
-    this.store.dispatch(reactionCommand).pipe(untilDestroyed(this)).subscribe();
+    reactionCommand.pipe(untilDestroyed(this)).subscribe();
   }
   onManageLook(event: { lookId: string; action: 'hide' | 'delete' }) {
     this.lookToManage = event;
@@ -147,15 +151,17 @@ export class FeedComponent implements OnInit {
     const { lookId, action } = this.lookToManage;
 
     const manageCommand =
-      action === 'hide' ? new HideLook(lookId) : new DeleteFeedLook(lookId);
-    this.store.dispatch(manageCommand).pipe(untilDestroyed(this)).subscribe();
+      action === 'hide'
+        ? this.actions.hideLook(lookId)
+        : this.actions.deleteFeedLook(lookId);
+    manageCommand.pipe(untilDestroyed(this)).subscribe();
 
     this.lookToManage = null;
     this.isDialogVisible.set(false);
   }
   private resetFeedState() {
-    this.store
-      .dispatch(new ResetFeedState())
+    this.actions
+      .resetFeedState()
       .pipe(
         tap(() =>
           this.dispatchFilters({

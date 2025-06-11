@@ -30,6 +30,9 @@ export class UserApiService {
   getCurrentUser(): Observable<User> {
     return this.http.get<User>(this.apiUrl + '/user/current-user');
   }
+  getUser(id: string): Observable<User> {
+    return this.http.get<User>(this.apiUrl + `/user/${id}`);
+  }
 
   refreshToken(token: BearerToken): Observable<BearerToken> {
     return this.http.put<BearerToken>(

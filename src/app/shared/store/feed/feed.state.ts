@@ -10,7 +10,7 @@ import {
   DeleteFeedLook,
   DeleteFeedReaction,
   GetFeedAttributeOptions,
-  GetLooks,
+  GetFeedLooks,
   HideLook,
   ResetFeedState,
 } from './feed.actions';
@@ -36,6 +36,7 @@ import {
   ReactionType,
   ReactionTypeEnum,
 } from '../../../core/models/reaction/reaction-type';
+import { createReactionUpdateOperator } from '../operators/create-reaction-update.operator';
 
 @State<FeedModel>({
   name: FEED_STATE_TOKEN,
@@ -109,8 +110,8 @@ export class FeedState implements NgxsOnInit {
     );
   }
 
-  @Action(GetLooks)
-  loadLooks(ctx: StateContext<FeedModel>, action: GetLooks) {
+  @Action(GetFeedLooks)
+  loadLooks(ctx: StateContext<FeedModel>, action: GetFeedLooks) {
     const state = ctx.getState();
 
     const filtersWithStatus: LookFilterPayload = {
@@ -283,7 +284,7 @@ export class FeedState implements NgxsOnInit {
   private loadFeed(ctx: StateContext<FeedModel>): void {
     ctx
       .dispatch([
-        new GetLooks(ctx.getState().filters),
+        new GetFeedLooks(ctx.getState().filters),
         new GetFeedAttributeOptions(),
       ])
       .pipe(untilDestroyed(this))
@@ -299,27 +300,10 @@ export class FeedState implements NgxsOnInit {
     ctx.setState(
       patch<FeedModel>({
         looks: patch({
-          items: updateItem<FeedLook>(
-            (look) => look.id === lookId,
-            (look) => ({
-              ...look,
-              likeCount:
-                reactionType === ReactionTypeEnum.Like
-                  ? look.likeCount + (isIncrement ? 1 : -1)
-                  : look.likeCount,
-              pinCount:
-                reactionType === ReactionTypeEnum.Pin
-                  ? look.pinCount + (isIncrement ? 1 : -1)
-                  : look.pinCount,
-              isLiked:
-                reactionType === ReactionTypeEnum.Like
-                  ? isIncrement
-                  : look.isLiked,
-              isPinned:
-                reactionType === ReactionTypeEnum.Pin
-                  ? isIncrement
-                  : look.isPinned,
-            }),
+          items: createReactionUpdateOperator(
+            lookId,
+            reactionType,
+            isIncrement,
           ),
         }),
       }),

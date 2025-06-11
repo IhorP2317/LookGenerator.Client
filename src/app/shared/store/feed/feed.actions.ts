@@ -1,8 +1,5 @@
 import { LookFilterPayload } from '../../../core/models/helpers/look-filter-type';
-import {
-  ReactionType,
-  ReactionTypeEnum,
-} from '../../../core/models/reaction/reaction-type';
+import { ReactionType } from '../../../core/models/reaction/reaction-type';
 
 const ACTION_SCOPE = '[Feed]';
 
@@ -14,7 +11,7 @@ export class GetColours {
   static readonly type = `${ACTION_SCOPE} Get Colours`;
 }
 
-export class GetLooks {
+export class GetFeedLooks {
   static readonly type = `${ACTION_SCOPE} Get Looks`;
 
   constructor(public filters: LookFilterPayload) {}

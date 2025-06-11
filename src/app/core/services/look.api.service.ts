@@ -1,10 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { API_URL } from '../../tokens';
-import {
-  LookFilterPayload,
-  LookFilterType,
-} from '../models/helpers/look-filter-type';
+import { LookFilterPayload } from '../models/helpers/look-filter-type';
 import { PagedList } from '../models/helpers/paged-list';
 import { FeedLook } from '../models/look/feed-look';
 import { Observable } from 'rxjs';

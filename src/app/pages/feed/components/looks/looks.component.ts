@@ -40,6 +40,7 @@ import { LoadingService } from '../../../../shared/services/loading.service';
     CdkVirtualForOf,
     AsyncPipe,
     NgClass,
+    RouterLink,
   ],
   templateUrl: './looks.component.html',
   styleUrl: './looks.component.css',

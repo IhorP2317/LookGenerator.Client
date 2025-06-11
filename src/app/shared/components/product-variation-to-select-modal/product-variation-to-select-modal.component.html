@@ -155,9 +155,9 @@
           <div
             class="group px-3 py-1.5 rounded-md border text-xs sm:text-sm font-medium cursor-pointer transition-all duration-150 text-center bg-white border-gray-300 text-indigo-700 hover:bg-indigo-100 hover:border-indigo-300 hover:text-indigo-700 scale-100 hover:scale-[1.04]"
             [ngClass]="{
-          '!bg-indigo-500 !text-white !border-indigo-500': sizeForm.controls.isSelected.value
+          '!bg-indigo-500 !text-white !border-indigo-500': !sizeForm.controls.isSelected.value
         }"
-            (click)="sizeForm.controls.isSelected.setValue(!sizeForm.controls.isSelected.value)"
+            (click)="toggleVariationSelection( sizeForm)"
           >
             <div class="leading-tight">
               <div class="font-semibold">{{ sizeForm.controls.size.value ?? 'Unknown' }}</div>
@@ -172,8 +172,7 @@
       }
     </div>
 
-
-    <div class="flex justify-center">
+   <div class="flex justify-center">
       <p-button
         label="Place"
         styleClass="
@@ -194,6 +193,7 @@
       font-semibold
     "
         (onClick)="onProductVariationsPlace()"
+        [disabled]="disableUnselected$ | async"
       ></p-button>
     </div>
 

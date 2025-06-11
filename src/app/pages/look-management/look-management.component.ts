@@ -19,6 +19,7 @@ import { concatMap, filter, of, switchMap, take, tap } from 'rxjs';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+  ClearLookToManage,
   CreateLook,
   GetLookManagementProductCategories,
   GetLookManagementProductsToSelect,
@@ -45,6 +46,9 @@ import { AttributeOption } from '../../core/models/attribute-option/attribute-op
 import { ProductVariation } from '../../core/models/product-variation/product-variation';
 import { catchErrorWithNotification } from '../../core/helpers/utils/catch-error-with-notification.util';
 import { MessageService } from 'primeng/api';
+import { FloatingToolbarComponent } from '../../shared/components/floating-toolbar/floating-toolbar.component';
+import { AuthState } from '../../shared/store/auth/auth.state';
+import { ProductBodyZone } from '../../core/models/product/product-body-zone';
 
 @UntilDestroy()
 @Component({
@@ -60,6 +64,7 @@ import { MessageService } from 'primeng/api';
     CurrencyPipe,
     ProductVariationToSelectModalComponent,
     AsyncPipe,
+    FloatingToolbarComponent,
   ],
   templateUrl: './look-management.component.html',
   styleUrl: './look-management.component.css',
@@ -73,6 +78,7 @@ export class LookManagementComponent implements OnInit {
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private messageService: MessageService = inject(MessageService);
   private router: Router = inject(Router);
+  currentUser = this.store.selectSignal(AuthState.getCurrentUser);
   genders = this.store.selectSignal(LookManagementState.getGenders);
 
   productCategories$ = this.store.select(LookManagementState.getCategories);
@@ -140,19 +146,19 @@ export class LookManagementComponent implements OnInit {
       .subscribe();
   }
 
-  onProductAdded(variations: ProductVariationForm[]) {
-    const array = this.form.controls.productVariations;
-    for (const variation of variations) {
-      array.push(this.formBuilder.group<ProductVariationForm>(variation));
-    }
-  }
-
   removeVariation(index: number): void {
     this.form.controls.productVariations.removeAt(index);
   }
   onAddingProductVariations() {
+    console.log(
+      'All sizes:',
+      this.selectProductForm.controls.sizes.controls.map((c) => ({
+        size: c.controls.size.value,
+        isSelected: c.controls.isSelected.value,
+      })),
+    );
     const selectedVariations = this.selectProductForm.controls.sizes.controls
-      .filter((variationForm) => !variationForm.controls.isSelected.value)
+      .filter((variationForm) => variationForm.controls.isSelected.value)
       .map((variationForm) => variationForm.getRawValue());
 
     const targetArray = this.form.controls.productVariations;
@@ -176,6 +182,13 @@ export class LookManagementComponent implements OnInit {
             imageUrl: this.formBuilder.control<string | null>(
               variation.imageUrl,
             ),
+            bodyZone: this.formBuilder.control<ProductBodyZone>(
+              variation.bodyZone,
+            ),
+            parentCategory: this.formBuilder.control<string>(
+              variation.parentCategory,
+            ),
+            gender: this.formBuilder.control<Gender>(variation.gender),
             isSelected: this.formBuilder.control<boolean>(true),
           }),
         );
@@ -210,7 +223,8 @@ export class LookManagementComponent implements OnInit {
         switchMap((params) => {
           const id: string | null = params.get('id');
           if (!id) {
-            return of(null); // Emit null so that `tap` is still executed
+            this.store.dispatch(new ClearLookToManage());
+            return of(null);
           }
           return this.store.dispatch(new GetLookToManage(id));
         }),
@@ -238,7 +252,10 @@ export class LookManagementComponent implements OnInit {
     look.products.forEach((product) => {
       product.productVariations.forEach((variation) => {
         variationsArray.push(
-          this.createProductVariationForm(variation, product),
+          this.createProductVariationForm(variation, {
+            ...product,
+            parentCategory: product.categories[0],
+          }),
         );
       });
     });
@@ -279,7 +296,7 @@ export class LookManagementComponent implements OnInit {
             this.selectProductForm.controls.sizes.clear();
             variations.forEach((variation) => {
               this.selectProductForm.controls.sizes.push(
-                this.createProductVariationForm(variation, product),
+                this.createProductVariationForm(variation, product, false),
               );
             });
           }
@@ -329,6 +346,9 @@ export class LookManagementComponent implements OnInit {
       productId: this.formBuilder.control<string>(product.id),
       productItemId: this.formBuilder.control<string>(product.productItemId),
       imageUrl: this.formBuilder.control<string | null>(product.productImage),
+      bodyZone: this.formBuilder.control<ProductBodyZone>(product.bodyZone),
+      parentCategory: this.formBuilder.control<string>(product.parentCategory),
+      gender: this.formBuilder.control<Gender>(product.gender),
       isSelected: this.formBuilder.control<boolean>(isSelected),
     });
   }

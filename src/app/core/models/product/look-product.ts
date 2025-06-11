@@ -1,10 +1,11 @@
 import { ProductBodyZone } from './product-body-zone';
 import { ProductVariation } from '../product-variation/product-variation';
+import { Gender } from '../helpers/gender';
 
 export interface LookProduct {
   id: string;
   name: string;
-  gender: string;
+  gender: Gender;
   description: string | null;
   bodyZone: ProductBodyZone;
   categories: string[];

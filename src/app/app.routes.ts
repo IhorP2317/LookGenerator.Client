@@ -7,6 +7,9 @@ import { FeedState } from './shared/store/feed/feed.state';
 import { LookState } from './shared/store/look/look.state';
 import { LookManagementState } from './shared/store/look-management/look-management.state';
 import { lookOwnershipGuard } from './core/helpers/guards/look-ownership.guard';
+import { SizeGuideState } from './shared/store/size-guide/size-guide.state';
+import { UserProfileState } from './shared/store/user-profile/user-profile.state';
+import { LookGenerationState } from './shared/store/look-generation/look-generation.state';
 
 export const routes: Routes = [
   {
@@ -83,6 +86,16 @@ export const routes: Routes = [
     canActivate: [authGuard, lookOwnershipGuard],
   },
   {
+    path: 'looks/generate',
+    loadComponent: () =>
+      import('./pages/look-generation/look-generation.component').then(
+        (c) => c.LookGenerationComponent,
+      ),
+    data: { showHeader: true },
+    providers: [provideStates([LookGenerationState])],
+    canActivate: [authGuard],
+  },
+  {
     path: 'looks/:id',
     loadComponent: () =>
       import('./pages/look/look.component').then((c) => c.LookComponent),
@@ -90,13 +103,22 @@ export const routes: Routes = [
     providers: [provideStates([LookState])],
   },
   {
-    path: 'looks/generate',
+    path: 'size-guide',
     loadComponent: () =>
-      import('./pages/look-generation/look-generation.component').then(
-        (c) => c.LookGenerationComponent,
+      import('./pages/size-guide/size-guide.component').then(
+        (c) => c.SizeGuideComponent,
       ),
     data: { showHeader: true },
-    canActivate: [authGuard],
+    providers: [provideStates([SizeGuideState])],
+  },
+  {
+    path: 'users/:id',
+    loadComponent: () =>
+      import('./pages/user-profile/user-profile.component').then(
+        (c) => c.UserProfileComponent,
+      ),
+    data: { showHeader: true },
+    providers: [provideStates([UserProfileState])],
   },
   {
     path: '',
